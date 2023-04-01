@@ -5,7 +5,7 @@ import Empty from '../components/wish/Empty'
 import Full from '../components/wish/Full'
 
 const WishList = () => {
-    const [isEmpty,setIsEmpty]= useState(false)
+    const [isEmpty,setIsEmpty]= useState(true)
   return (
     <div className="bg-neutral-100 h-screen w-screen overflow-hidden flex flex-row">
     <Sidebar/>

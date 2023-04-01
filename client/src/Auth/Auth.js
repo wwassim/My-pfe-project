@@ -9,6 +9,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 //
 import { useState, useEffect } from 'react'
@@ -22,6 +25,11 @@ import { login, reset } from'../redux/auth/authSlice'
 const theme = createTheme();
 
 const Auth=()=>{
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -103,11 +111,20 @@ const Auth=()=>{
               fullWidth
               name="password"
               label="Password"
-              type="password"
               id="password"
               value={password}
               onChange={onChange}
               autoComplete="current-password"
+              type={showPassword ? "text" : "password"}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClickShowPassword}>
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"

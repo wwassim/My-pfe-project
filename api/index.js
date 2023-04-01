@@ -9,6 +9,7 @@ const auth = require('./Routes/auth')
 const userRoute = require('./Routes/user')
 const categoryRoute = require('./Routes/category')
 const artistRoute = require('./Routes/artist')
+const eventRoute = require('./Routes/event')
 const helmet = require("helmet")
 const morgan = require("morgan")
 
@@ -27,6 +28,7 @@ app.use('/auth',auth)
 app.use("/users", userRoute);
 app.use("/categories", categoryRoute);
 app.use("/artist", artistRoute);
+app.use("/event", eventRoute);
 
 
 

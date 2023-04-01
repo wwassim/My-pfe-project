@@ -35,6 +35,7 @@ const ArtistForm = ({itemId}) => {
       const formData = new FormData();
           formData.append("name", values.name);
           formData.append("nn", values.nn);
+          console.log(formData)
         dispatch(insertArtist(formData))
         .unwrap()
         .then(() => {

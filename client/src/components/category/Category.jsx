@@ -4,6 +4,7 @@ const Category = () => {
   return (
     <div className='max-w-[1640px] px-4 py-12 mx-auto'>
     <h6 className='text-black-600 font-bold text-xl text-left'>Categories</h6>
+    
     {/* Categoties */}
     <div className='grid grid-cols-2 md:grid-cols-4 gap-6 py-6'>
         

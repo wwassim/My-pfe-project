@@ -11,7 +11,7 @@ import Home from './pages/Home';
 import Myevents from './pages/Myevents';
 import UserProfilePage from './pages/ProfilePage';
 import WishList from './pages/WishList';
-
+import Test from './pages/Test'
 
  
 function App() {
@@ -30,6 +30,7 @@ function App() {
       <Route path="/chat" element={<Chat/>}/>
       <Route path="/myevent" element={<Myevents/>}/>
       <Route path="/addevent" element={<Checkout/>}/>
+      <Route path="/jj" element={<Test/>}/>
      </Routes>
 
      </BrowserRouter>

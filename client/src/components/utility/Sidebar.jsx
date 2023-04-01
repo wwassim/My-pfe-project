@@ -11,7 +11,7 @@ function Sidebar() {
   
   return (
 
-  <div class="sidebar min-h-screen w-[3.35rem] lg:w-56 overflow-hidden border-r hover:bg-white hover:shadow-lg">
+  <div class="sidebar min-h-[3.35rem] w-[3.35rem] lg:w-56 overflow-hidden border-r hover:bg-white hover:shadow-lg">
     <div class="flex h-screen flex-col justify-between pt-2 pb-6">
       <div>
       <NavLink to="/">

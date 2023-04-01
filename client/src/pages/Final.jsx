@@ -1,12 +1,7 @@
 import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import {CssBaseline,Container,Paper,Typography,Box,Button}from'@mui/material/'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import UpdateProfile from './UpdateProfile';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 
 const theme = createTheme();
 

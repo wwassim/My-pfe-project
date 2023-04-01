@@ -12,7 +12,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from "react-router-dom";
-
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 //
 import { useState,useEffect } from 'react';
 import {useSelector,useDispatch}from'react-redux'
@@ -24,6 +26,10 @@ import { register, reset } from '../redux/auth/authSlice'
 const theme = createTheme();
 
 const Singup = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -125,23 +131,27 @@ const Singup = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  value={password}
-                  autoComplete="new-password"
-                  onChange={onChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
+              <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              id="password"
+              value={password}
+              onChange={onChange}
+              autoComplete="current-password"
+              type={showPassword ? "text" : "password"}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClickShowPassword}>
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
               </Grid>
             </Grid>
             <Button

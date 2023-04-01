@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function AddressForm({data, setData}) {
+export default function AddressForm({formData, setData}) {
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -14,8 +14,8 @@ export default function AddressForm({data, setData}) {
         <Grid item xs={12} sm={6}>
           <TextField
             required
-            onChange={(e) => setData({...data, firstName: e.target.value})}
-            value={data.firstName}
+            // onChange={(e) => setData({...data, firstName: e.target.value})}
+            // value={data.firstName}
             id="firstName"
             name="firstName"
             label="First name"
@@ -27,8 +27,8 @@ export default function AddressForm({data, setData}) {
         <Grid item xs={12} sm={6}>
           <TextField
             required
-            onChange={(e) => setData({...data, lastName: e.target.value})}
-             value={data.lastName}
+            // onChange={(e) => setData({...data, lastName: e.target.value})}
+            //  value={data.lastName}
             id="lastName"
             name="lastName"
             label="Last name"
@@ -40,8 +40,8 @@ export default function AddressForm({data, setData}) {
         <Grid item xs={12}>
           <TextField
             required
-            onChange={(e) => setData({...data, email: e.target.value})}
-            value={data.email}
+            // onChange={(e) => setData({...data, email: e.target.value})}
+            // value={data.email}
             id="email"
             name="email"
             label="Email address"

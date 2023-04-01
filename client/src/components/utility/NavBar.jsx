@@ -1,22 +1,24 @@
-import { useNavigate } from "react-router-dom";
-import { Box, IconButton, useTheme } from "@mui/material";
+import { useNavigate, } from "react-router-dom";
+import { useDispatch, useSelector  } from "react-redux";
+import { Box, Button, IconButton, useTheme } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-  
+import {reset,logout} from '../../redux/auth/authSlice'
   const Navbar = () => {
     // const [open, setOpen] = useState(false);
     // const theme = useStyles();
-     const navigate = useNavigate()
-  // const dispatch = useDispatch()
-  // const { user } = useSelector((state) => state.auth)
-  // const onLogout = () => {
-  //   dispatch(logout())
-  //   dispatch(reset())
-  //   navigate('/')
-  // }
+  const navigate = useNavigate()
+   const dispatch = useDispatch()
+  const { user } =  useSelector((state) => state.auth)
+
+  const onLogout = () => {
+    dispatch(logout())
+    dispatch(reset())
+    navigate('/')
+  }
 
     return (   
       <Box width={"full"} display="flex" justifyContent="space-between" p={2}>
@@ -41,9 +43,19 @@ import SearchIcon from "@mui/icons-material/Search";
         <IconButton  onClick={()=>navigate("/wish")}>
         <FavoriteBorderIcon/>
         </IconButton>
-        <IconButton>
+        {user ? (
+        <>
+          <Button  onClick={onLogout}>
           <PersonOutlinedIcon />
-        </IconButton>
+          </Button>
+        </>
+        ):(
+          <>
+          <IconButton  onClick={()=>navigate("/auth")}>
+          <PersonOutlinedIcon />
+          </IconButton>
+        </>
+        )}
       </Box>
     </Box>
     );

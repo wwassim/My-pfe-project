@@ -1,16 +1,15 @@
 const multer = require('multer');
 
 
-//MULTER CONFIGURATION
 const storage = multer.diskStorage({
-    destination: (req,file,cb)=>{
-        console.log(file)
-        cb(null, './public');
+    destination: function (req, file, cb) {
+      cb(null, "public/assets");
     },
-    filename:(req,file,cb)=>{
-        cb(null,`${Date.now()}_${file.originalname.replace(/\s+/g,'-')}_${Math.round(Math.random()* 1E9)}`);
+    filename: function (req, file, cb) {
+      cb(null, `${Date.now()}_${file.originalname.replace(/\s+/g, '-')}`);
     },
-})
-const upload = multer({storage})
+  });
+  const upload = multer({ storage:storage });
+
 
 module.exports={storage,upload}

@@ -36,9 +36,9 @@ const RightComp = () => {
      </CardContent> 
      
       <CardFooter className="p-1">
-        <Button size="lg p-5" fullWidth={true}>
+        <button className="rounded-lg p-2 w-full bg-violet-700 text-white" >
           Reserve
-        </Button>
+        </button>
       </CardFooter>
     </Card>
   )
