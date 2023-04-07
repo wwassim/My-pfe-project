@@ -10,12 +10,29 @@ import DatePicker from "react-horizontal-datepicker";
 
  const Home = () => {
     const {loading,error,events} = useSelector((state)=>state.events);
+    
+    const [x, setEvent] = useState([])
+    const [searchResults, setSearchResults] = useState([])
+
     const dispatch = useDispatch();
-      useEffect(() => {
+
+    useEffect(() => {
+      setEvent(events);
+    }, [events]);
+
+    useEffect(() => {
       dispatch(fetchEvents());
      },[useDispatch])
+  
+     const filterCategory = (category)=>{
+      setEvent(
+        events.filter((item)=>{return item.category===category})
+       )
+     }
+
+     
      const selectedDay = val => {
-      console.log(val);
+      // console.log(val);
     };
  
   return (
@@ -23,9 +40,7 @@ import DatePicker from "react-horizontal-datepicker";
        <Sidebar/>
        
        <div className="flex flex-col flex-1">
-				<Navbar />
-        
-
+				<Navbar events={x} setSearchResults={setEvent} allevent={events}/>
 				<div className="flex-1 p-4 min-h-0 overflow-auto">
           <div className='max-w-[280px] sm:max-w-[720px] lg:max-w-[1240px] px-4  mx-auto'>
             <div className=""> 
@@ -33,9 +48,9 @@ import DatePicker from "react-horizontal-datepicker";
             </div>
           </div>
 
-          <Category/>
+          <Category filterCategory={filterCategory}/>
           <Loading loading={loading} error={error}>
-            <EventList events={events}/>
+            <EventList events={x}/>
           </Loading>
 				</div>
 			</div>

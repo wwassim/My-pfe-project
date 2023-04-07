@@ -14,15 +14,19 @@ const register = async (userData)=>{
 
 // Login user
 const login = async (userData) => {
-    const response = await axios.post(API_URL_LOGIN, userData)
-    if (response.data) {    
-    localStorage.setItem('user', JSON.stringify(response.data))
-    localStorage.setItem('token', JSON.stringify(response.data.accessToken))
+  const response = await axios.post(API_URL_LOGIN, userData);
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data));
+    localStorage.setItem('token', JSON.stringify(response.data.accessToken));
 
-    }
-
-    return response.data
+    // Refresh the data in local storage
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = JSON.parse(localStorage.getItem('token'));
+    localStorage.setItem('user', JSON.stringify({...user, accessToken: token}));
   }
+
+  return response.data;
+};
 
 // Logout user
 const logout = () => {

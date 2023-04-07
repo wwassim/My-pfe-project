@@ -1,119 +1,160 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import Fab from '@material-ui/core/Fab';
-import SendIcon from '@material-ui/icons/Send';
-import TelegramIcon from '@mui/icons-material/Telegram';
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  chatSection: {
-    width: '100%',
-    height: '80vh',
-    border: '5px solid  solid inherit',
-    backgroundColor: 'white'
-  },
-  headBG: {
-      backgroundColor: '#e0e0e0'
-  },
-  borderRight500: {
-      borderRight: '1px solid #e0e0e0'
-  },
-  messageArea: {
-    height: '70vh',
-    overflowY: 'auto'
-  }
-});
+import React, {  useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector  } from "react-redux";  
+import Conversation from './Conversation ';
+import Messenger from './Messenger';
+import axios from "axios";
+import {io} from "socket.io-client"
 
 const ChatDetails = () => {
-  const classes = useStyles();
+  const { user } =  useSelector((state) => state.auth)
+  const [conversations, setConversations] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const scrollRef = useRef();
+  const socket = useRef();
 
+
+  useEffect(() => {
+    socket.current = io("ws://localhost:8900");
+    socket.current.on("getMessage", (data) => {
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    arrivalMessage &&
+      currentChat?.members.includes(arrivalMessage.sender) &&
+      setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage, currentChat]);
+
+  useEffect(() => {
+    socket.current.emit("addUser", user._id);
+  }, [user]);
+/////////////////
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await axios.get("/conversations/" + user._id);
+        setConversations(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getConversations();
+  }, [user._id]);
+
+  useEffect(() => {
+    const getMessages = async () => {
+      try {
+        const res = await axios.get("/messages/" + currentChat?._id);
+        setMessages(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getMessages();
+  }, [currentChat]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const message = {
+      sender: user._id,
+      text: newMessage,
+      conversationId: currentChat._id,
+    };
+
+    const receiverId = currentChat.members.find(
+      (member) => member !== user._id
+    );
+
+    socket.current.emit("sendMessage", {
+      senderId: user._id,
+      receiverId,
+      text: newMessage,
+    });
+
+    try {
+      const res = await axios.post("/messages", message);
+      setMessages([...messages, res.data]);
+      setNewMessage("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   return (
-      <div>
-        <Grid container      className="w-full h-800px border bg-white rounded-md">
-            <Grid item xs={3} className={classes.borderRight500}>
-                <List>
-                    <ListItem button key="RemySharp">
-                        <ListItemIcon>
-                            <Avatar alt="Remy Sharp" src="https://material-ui.com/static/images/avatar/1.jpg" />
-                        </ListItemIcon>
-                        <ListItemText primary="Remy Sharp">Remy Sharp</ListItemText>
-                        <ListItemText secondary="online" align="right"></ListItemText>
-                    </ListItem>
-                    <Divider />
-                    <ListItem button key="Alice">
-                        <ListItemIcon>
-                            <Avatar alt="Alice" src="https://material-ui.com/static/images/avatar/3.jpg" />
-                        </ListItemIcon>
-                        <ListItemText primary="Alice">Alice</ListItemText>
-                    </ListItem>
-                    <Divider />
-                    <ListItem button key="CindyBaker">
-                        <ListItemIcon>
-                            <Avatar alt="Cindy Baker" src="https://material-ui.com/static/images/avatar/2.jpg" />
-                        </ListItemIcon>
-                        <ListItemText primary="Cindy Baker">Cindy Baker</ListItemText>
-                    </ListItem>
-                    <Divider />
-                </List>
-            </Grid>
-            <Grid item xs={9}>
-                {/* messegrie */}
-                <List className={classes.messageArea}>
-                    {/* <ListItem key="1">
-                        <Grid className='flex flex-row-reverse' container>
-                            <Grid  item xs={12}>
-                                <ListItemText align="right" className='flex justify-self-end bg-blue-600 text-white w-max px-4 py-2 rounded-lg shadow'  primary="Hey man, What's up ?"></ListItemText>
-                            </Grid>
-                            
-                        </Grid>
-                    </ListItem>
-                    <ListItem key="2">
-                        <Grid container>
-                            <Grid item xs={12}>
-                                <ListItemText className='text-gray-700  bg-white border border-black-500 shadow-md  w-max px-4 py-2 rounded-lg shadow' align="left" primary="Hey, Iam Good! What about you ?"></ListItemText>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <ListItemText align="left" secondary="09:31"></ListItemText>
-                            </Grid>
-                        </Grid>
-                    </ListItem> */}
-                </List>
-                <Divider />
-                
-                <form>
-        <div className="flex items-center justify-between w-full p-3 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
       
-          <input
-            type="text"
-            placeholder="Write a message"
-            className="block w-full py-2 pl-4 mx-3 outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            name="message"
-            required
-           
-          />
-          <button type="submit">
-            <TelegramIcon
-              className="h-6 w-6 text-blue-600 dark:text-blue-500"
-              aria-hidden="true"
-            />
-          </button>
-        </div>
-      </form>
-            </Grid>
-        </Grid>
+      //  <!-- This is an example component -->
+      <div className="container w-full h-[600px]  mx-auto shadow-lg rounded-lg">
+          {/* <!-- Chatting --> */}
+          <div className="flex flex-row justify-between bg-white h-full">
+            {/* <!-- chat list --> */}
+            <div className="flex flex-col w-2/5 border-r-2 overflow-y-auto">
+              {/* <!-- search compt --> */}
+              <div className="border-b-2 py-4 px-2">
+                <input
+                  type="text"
+                  placeholder="search chatting"
+                  className="py-2 px-2 border-2 border-gray-200 rounded-2xl w-full"
+                />
+              </div>
+              {/* <!-- end search compt --> */}
+              {/* <!-- user list --> */}
+              {conversations.map((item)=>(
+                <div className='cursor-pointer' onClick={() => setCurrentChat(item)}>
+                  <Conversation conv={item} currentUser={user}/>
+                </div>
+              ))}
+              
+              {/* <!-- end user list --> */}
+            </div>
+            {/* <!-- end chat list --> */}
+            {/* <!-- message --> */}
+            <div className="w-full px-5 flex flex-col justify-between">
+            {currentChat ? (
+              <>
+              <div className="flex flex-col mt-5 overflow-y-scroll">
+
+              {messages.map((m)=>(
+                <div ref={scrollRef}>
+                  <Messenger message={m} own={m.sender===user._id}/> 
+                </div>
+                ))
+              }
+              </div>
+              <div className="py-5 flex justify-between">
+                <input
+                  className="w-full bg-gray-300 py-5 px-3 rounded-xl mr-2"
+                  type="text"
+                  placeholder="type your message here..."
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  value={newMessage}
+                />
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl" onClick={handleSubmit}>
+                  Send
+                </button>
+              </div>
+              </>):(
+                <>
+                  <img
+                   src="/assets/chat.jpg"
+                   alt="Empty Chat"
+                   className="h-full w-full"
+                   />
+                </>
+              )}
+            </div>
+            {/* <!-- end message --> */}
+          </div>
       </div>
   );
 }

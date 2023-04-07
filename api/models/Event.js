@@ -9,6 +9,7 @@ const EventSchema  = new mongoose.Schema({
     eventpicture:{ type: String, default: "",required: true},
     ticketsNbr:{type: Number, required: true},
     ticketsPrice:{type: Number, required: true},
+    participant:{ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [], },
     },
     { timestamps: true }
 );

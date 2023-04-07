@@ -1,4 +1,5 @@
 const User = require("../models/User")
+const Event = require("../models/Event");
 const Cryptojs = require("crypto-js")
 
 
@@ -35,7 +36,7 @@ exports.updateUser = async(req,res)=>{
         },{new:true})
         res.status(200).json(updateUser)
     } catch (error) {
-        res.status(500).json(err);
+        res.status(500).json(error);
     }
 }
 
@@ -45,7 +46,7 @@ exports.deleteUser = async(req,res)=>{
         const deleteUser=await User.findByIdAndDelete(req.params.id)
         res.status(200).json(deleteUser)
     } catch (error) {
-        res.status(500).json(err);
+        res.status(500).json(error);
     }
 }
 
@@ -58,7 +59,7 @@ exports.followUser =  async (req, res) => {
         if (!user.followers.includes(req.body.userId)) {
           await user.updateOne({ $push: { followers: req.body.userId } });
           await currentUser.updateOne({ $push: { followings: req.params.id } });
-          res.status(200).json("user has been followed");
+          res.status(200).json(currentUser._id);
         } else {
           res.status(403).json("you allready follow this user");
         }
@@ -79,7 +80,7 @@ exports.unfollowUser = async (req, res) => {
         if (user.followers.includes(req.body.userId)) {
           await user.updateOne({ $pull: { followers: req.body.userId } });
           await currentUser.updateOne({ $pull: { followings: req.params.id } });
-          res.status(200).json("user has been unfollowed");
+          res.status(200).json(currentUser._id);
         } else {
           res.status(403).json("you dont follow this user");
         }
@@ -90,3 +91,19 @@ exports.unfollowUser = async (req, res) => {
       res.status(403).json("you cant unfollow yourself");
     }
   }
+
+  //get your events
+  exports.getYourEvents = async(req, res)=>{
+    try {
+      const user = await User.findById(req.params.id).populate("participationEvent")
+      const events=user.participationEvent
+      const eventList = events.map(event => {
+        const { participant, ...others } = event._doc;
+        return others;
+      });
+      return res.status(200).json(eventList);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+

@@ -3,18 +3,11 @@ import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 
 
-function ImageSlider() {
+function ImageSlider({image}) {
     const slides = [
         {
-          url: 'https://i.ytimg.com/vi/UXsQxM8eR9w/maxresdefault.jpg',
+          url:`http://localhost:5000/assets/${image}`,
         },
-        {
-          url: 'https://www.businessnews.com.tn/images/album/IMGBN64443ala.jpg',
-        },
-        {
-          url: 'https://weraveyou.com/wp-content/uploads/2022/07/Tomorrowland-2022-Mainstage-01-1.jpg',
-        },
-    
         
       ];
     

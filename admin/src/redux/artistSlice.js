@@ -57,6 +57,7 @@ export const deleteArtist =createAsyncThunk("artists/deleteArtist",async(id, thu
         const res = await axios.delete(`http://localhost:5000/artist/${id}`,{headers:{
             "content-type": "application/json;charset=utf-8",
            }})
+           console.log(res.data)
         return res.data
     } catch (error) {
         return rejectWithValue(error.message)

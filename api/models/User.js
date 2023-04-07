@@ -6,10 +6,10 @@ const UserSchema = new mongoose.Schema(
     lastname: { type: String, required: true},
     email: { type: String, required: true },
     password: { type: String, required: true },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
+    isAdmin: {type: Boolean,default: false,},
+    followers: {type:Array,default:[],},
+    followings: {type:Array,default:[],},
+    participationEvent :{ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], default: [], },
   },
   { timestamps: true }
 );

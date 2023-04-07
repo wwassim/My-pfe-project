@@ -13,5 +13,8 @@ Router.delete('/:id',eventController.deleteEvent)
 Router.get('/:id',eventController.getEvent)
 //get all events 
 Router.get("/",eventController.getEvents)
-
+//buy tickets event
+Router.put('/:id/buy',eventController.buyTicket)
+// get users in event
+Router.get("/:id/myevent",eventController.getUsersEvent)
 module.exports = Router

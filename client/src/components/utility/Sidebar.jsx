@@ -5,9 +5,12 @@ import TelegramIcon from '@mui/icons-material/Telegram';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { NavLink } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
 
 function Sidebar() {
+  const { user } =  useSelector((state) => state.auth)
+ 
   
   return (
 
@@ -31,12 +34,15 @@ function Sidebar() {
           </li>
 
           <li class="min-w-max">
-          <NavLink to="/myevent" className={({isActive})=>isActive?"text-black-500":"text-gray-600"} aria-label="Tickets" >
+          {  user!== null&&(
+          <NavLink to={`/${user._id}/myevent`} className={({isActive})=>isActive?"text-black-500":"text-gray-600"} aria-label="Tickets" >
             <div class="bg group flex items-center space-x-4 rounded-full px-4 py-3 ">
               <ConfirmationNumberIcon/>
               <span class="group-hover:text-gray-700">Tickets</span>
             </div>
           </NavLink>
+           )
+          }
           </li>
 
           <li class="min-w-max">
@@ -68,20 +74,24 @@ function Sidebar() {
         </ul>
       </div>
       {/* Profile */}
-      <NavLink to="/users/:id">
-      <div className="pt-2 px-2 flex justify-between border-t border-gray-300/40 dark:border-gray-700">
-        <div class="w-max flex item-center gap-4">
-         <img className="w-10 h-10 rounded-full" src='https://cdn-icons-png.flaticon.com/512/147/147144.png' alt='loading'/>
-          <div>
-            <h6 className="text-gray-600 font-medium dark:text-gray-200">First name</h6>
-            <span className="block -mt-0.5 text-xs text-gray-500">Profile</span>
-          </div>
+    {  user!== null&&(
+    <NavLink to={`/users/${user._id}`}>
+    <div className="pt-2 px-2 flex justify-between border-t border-gray-300/40 dark:border-gray-700">
+      <div class="w-max flex item-center gap-4">
+        <img className="w-10 h-10 rounded-full" src='https://cdn-icons-png.flaticon.com/512/147/147144.png' alt='loading'/>
+        <div>
+          <h6 className="text-gray-600 font-medium dark:text-gray-200">{user.firstname}</h6>
+          <span className="block -mt-0.5 text-xs text-gray-500">Profile</span>
         </div>
-        <DensityMediumIcon/>
       </div>
-      </NavLink>
+      <DensityMediumIcon/>
+    </div>
+    </NavLink>
+    )
+    }
     </div>
   </div>
   )
+  
 }
 export default Sidebar
