@@ -15,9 +15,8 @@ exports.getAllUsers = async(req,res)=>{
 
 //get user
 exports.getUser = async(req,res)=>{
-    try {
-        
-        const user=await User.findById(req.params.id)
+    try {      
+        const user=await User.findById(req.params.id).populate("followings")
         const{password,...other}=user._doc
         res.status(200).json(other)
     } catch (error) {
@@ -27,12 +26,17 @@ exports.getUser = async(req,res)=>{
 
 //upade user information
 exports.updateUser = async(req,res)=>{
+  console.log(req.files)
     if (req.body.password){
         req.body.password=Cryptojs.AES.encrypt(req.body.password,process.env.PASS_SECRET).toString();
     }
     try {
         const updateUser=await User.findByIdAndUpdate(req.params.id,{
-            $set:req.body
+          $set: {
+            frontcin:  req.files.frontcin[0].filename, // Update the frontcin field with the new filename
+            backcin: req.files.backcin[0].filename, // Update the backcin field with the new filename
+            ...req.body // Update other fields with the values in req.body
+          }
         },{new:true})
         res.status(200).json(updateUser)
     } catch (error) {
@@ -67,7 +71,7 @@ exports.followUser =  async (req, res) => {
         res.status(500).json(err);
       }
     } else {
-      res.status(403).json("you cant follow yourself");
+      res.status(403).json("you can't follow yourself");
     }
   }
 

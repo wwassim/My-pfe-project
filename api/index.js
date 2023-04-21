@@ -12,6 +12,7 @@ const artistRoute = require('./Routes/artist')
 const eventRoute = require('./Routes/event')
 const conversationRoute = require('./Routes/conversation')
 const messageRoute = require('./Routes/message')
+const paymentRoute = require('./Routes/payment')
 const helmet = require("helmet")
 const morgan = require("morgan")
 
@@ -33,6 +34,9 @@ app.use("/artist", artistRoute);
 app.use("/event", eventRoute);
 app.use("/conversations", conversationRoute);
 app.use("/messages", messageRoute);
+app.use("/payment", paymentRoute);
+
+
 
 
 

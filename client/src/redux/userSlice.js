@@ -64,7 +64,37 @@ export const fetchTicket = createAsyncThunk("users/fetchTicket",async(id,thunkAP
         return rejectWithValue(error.message)
     }
 })
+//update user
 
+// export const updateUser =createAsyncThunk("users/updateUser",async (item,thunkAPI)=>{
+//     const{rejectWithValue} = thunkAPI;
+//      const id=item.get("_id")
+//      const config = {header: { "content-type": "multipart/form-data" }}
+//     try {
+//       const res= await axios.put(`http://localhost:5000/users/${id}`,item,config,{headers:{
+//         "content-type": "application/json;charset=utf-8",
+//        }})
+//        const data =  res.data
+//        return data;
+//     } catch (error) {
+//         return rejectWithValue(error.message)
+//     }
+// })
+export const updateUser =createAsyncThunk("users/updateUser",async (item,thunkAPI)=>{
+    const{rejectWithValue} = thunkAPI;
+    const id=item.get("_id")
+    const config = {header: { "content-type": "multipart/form-data" }}
+    console.log(item)
+    try {
+      const res= await axios.put(`http://localhost:5000/users/${id}`,item,config,{headers:{
+        "content-type": "application/json;charset=utf-8",
+       }})
+       const data =  res.data
+       return data;
+    } catch (error) {
+        return rejectWithValue(error.message)
+    }
+})
 const userSlice = createSlice({
     name:"users",
     initialState,
@@ -131,7 +161,17 @@ const userSlice = createSlice({
             state.loading =false;
             state.error=true;
         })
-        
+        .addCase(updateUser.pending,(state,action)=>{
+            state.loading=true;
+        })
+        .addCase(updateUser.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.user  = action.payload;
+        })
+        .addCase(updateUser.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
     }
 })
 

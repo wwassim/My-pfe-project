@@ -7,9 +7,14 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true },
     password: { type: String, required: true },
     isAdmin: {type: Boolean,default: false,},
-    followers: {type:Array,default:[],},
-    followings: {type:Array,default:[],},
+    followers: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [], },
+    followings: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [], },
+    point: {type: Number,default: 0},
     participationEvent :{ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }], default: [], },
+    backcin:{ type: String, default: "",},
+    frontcin:{ type: String, default: "",},
+    phonenumber:{ type: String,default: ""  },
+    ribNumber:{ type: String, default: "" },
   },
   { timestamps: true }
 );

@@ -23,6 +23,23 @@ export const fetchEvent =createAsyncThunk("events/fetchEvent",async(id,thunkAPI)
         return rejectWithValue(error.message)
     }
 })
+//fetch Organisateur events
+export const fetchOrgEvents =createAsyncThunk("events/fetchOrgEvents",async(info,thunkAPI)=>{
+    const {rejectWithValue}=thunkAPI;
+    const queryParams = {id:info};
+    const config = {
+        params:queryParams,
+        header: { "content-type": "multipart/form-data" }}
+
+    try {
+        const res = await axios.get(`/event/organisateur`,config,{headers:{
+            "content-type": "application/json;charset=utf-8",
+           }})
+        return  res.data
+    } catch (error) {
+        return rejectWithValue(error.message)
+    }
+})
 //buy a ticket 
 export const getTicket = createAsyncThunk("events/getTicket",async(data,thunkAPI)=>{
     const {rejectWithValue}=thunkAPI;
@@ -39,6 +56,26 @@ export const getTicket = createAsyncThunk("events/getTicket",async(data,thunkAPI
 })
 
 //Add event 
+export const addEvent = createAsyncThunk("events/addEvent",async(data,thunkAPI)=>{
+    const {rejectWithValue}=thunkAPI;
+    const config = {header: { "content-type": "multipart/form-data" }}
+    try {
+        const res = await axios.post(`/event`,data,config,)
+        return res.data   
+    } catch (error) {
+        return rejectWithValue(error.message)
+    }
+})
+//Fetch participant event
+export const fetchParticipant = createAsyncThunk("users/fetchParticipant",async(id,thunkAPI)=>{
+    const {rejectWithValue}=thunkAPI;
+    try {
+        const res = await axios.get(`/event/${id}/participant`)
+        return  res.data
+    } catch (error) {
+        return rejectWithValue(error.message)
+    }
+})
 //Update event
 //Delete event
 
@@ -47,7 +84,8 @@ export const getTicket = createAsyncThunk("events/getTicket",async(data,thunkAPI
 const eventSlice= createSlice({
     name:'events',
     initialState,
-    reducers:{   cleanEvent:(state) => {state.event = null}},
+    reducers:{   cleanEvent:(state) => {state.event = null},
+    cleanEvents:(state) => {state.events = null}},
     extraReducers:(builder)=>{
         builder
         .addCase(fetchEvents.pending,(state)=>{
@@ -86,8 +124,44 @@ const eventSlice= createSlice({
             state.loading =false;
             state.error=true;
         })
+        .addCase(addEvent.pending,(state)=>{
+            state.loading=true;
+            state.error=false;
+        })
+        .addCase(addEvent.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.events.push(action.payload)
+        })
+        .addCase(addEvent.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
+        .addCase(fetchOrgEvents.pending,(state)=>{
+            state.loading=true;
+            state.error=false;
+        })
+        .addCase(fetchOrgEvents.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.events=action.payload;
+        })
+        .addCase(fetchOrgEvents.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
+        .addCase(fetchParticipant.pending,(state)=>{
+            state.loading=true;
+            state.error=false;
+        })
+        .addCase(fetchParticipant.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.event=action.payload;
+        })
+        .addCase(fetchParticipant.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
     }
 })
 
-export const {cleanEvent}=eventSlice.actions;
+export const {cleanEvent,cleanEvents}=eventSlice.actions;
 export default eventSlice.reducer;

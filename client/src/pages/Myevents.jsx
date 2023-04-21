@@ -15,7 +15,7 @@ const Myevents = () => {
   useEffect(() => {
     dispatch(fetchTicket(id));
    },[useDispatch])
-   console.log(user)
+
 
   return (
     <div className="bg-neutral-100 h-screen w-screen overflow-hidden flex flex-row">

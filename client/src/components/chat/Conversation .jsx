@@ -9,30 +9,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import {fetchUser} from '../../redux/userSlice'
-const useStyles = makeStyles({
-    table: {
-      minWidth: 650,
-    },
-    chatSection: {
-      width: '100%',
-      height: '80vh',
-      border: '5px solid  solid inherit',
-      backgroundColor: 'white'
-    },
-    headBG: {
-        backgroundColor: '#e0e0e0'
-    },
-    borderRight500: {
-        borderRight: '1px solid #e0e0e0'
-    },
-    messageArea: {
-      height: '70vh',
-      overflowY: 'auto'
-    }
-  });
+
   
 const Conversation  = ({conv,currentUser}) => {
-    const classes = useStyles();
     const dispatch = useDispatch()
     const { user } =  useSelector((state) => state.users)
     useEffect(() => {

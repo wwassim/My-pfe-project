@@ -77,7 +77,7 @@ function Sidebar() {
     {  user!== null&&(
     <NavLink to={`/users/${user._id}`}>
     <div className="pt-2 px-2 flex justify-between border-t border-gray-300/40 dark:border-gray-700">
-      <div class="w-max flex item-center gap-4">
+      <div className="w-max flex item-center gap-4">
         <img className="w-10 h-10 rounded-full" src='https://cdn-icons-png.flaticon.com/512/147/147144.png' alt='loading'/>
         <div>
           <h6 className="text-gray-600 font-medium dark:text-gray-200">{user.firstname}</h6>

@@ -10,11 +10,11 @@ import DatePicker from "react-horizontal-datepicker";
 
  const Home = () => {
     const {loading,error,events} = useSelector((state)=>state.events);
-    
+    const dispatch= useDispatch()
     const [x, setEvent] = useState([])
     const [searchResults, setSearchResults] = useState([])
-
-    const dispatch = useDispatch();
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [category, setCategory] = useState(null);
 
     useEffect(() => {
       setEvent(events);
@@ -24,17 +24,23 @@ import DatePicker from "react-horizontal-datepicker";
       dispatch(fetchEvents());
      },[useDispatch])
   
-     const filterCategory = (category)=>{
+     const filter = (category,selectedDate)=>{
+      if(category==="all"){
+        return setEvent(events)
+      }
       setEvent(
-        events.filter((item)=>{return item.category===category})
+        events.filter((item)=> item.category===category || item.startDate.includes(selectedDate))
        )
      }
-
-     
-     const selectedDay = val => {
-      // console.log(val);
+    const selectedDay = (val, category) => {
+      setSelectedDate(val?.toLocaleDateString('en-US', { weekday: 'short' , day: '2-digit',month: 'short', year: 'numeric' }));
+      filter(category, selectedDate)
     };
- 
+    
+    
+   
+
+    
   return (
     <div className="bg-neutral-100 h-screen w-screen overflow-hidden flex flex-row">
        <Sidebar/>
@@ -44,13 +50,13 @@ import DatePicker from "react-horizontal-datepicker";
 				<div className="flex-1 p-4 min-h-0 overflow-auto">
           <div className='max-w-[280px] sm:max-w-[720px] lg:max-w-[1240px] px-4  mx-auto'>
             <div className=""> 
-              <DatePicker  getSelectedDay={selectedDay} labelFormat={"MMMM"} color={"#6D28D9"}/>
+              <DatePicker getSelectedDay={(val) => selectedDay(val, category)}  onChange={selectedDay} dateFormat="MMMM d, yyyy" color={"#6D28D9"}/>
             </div>
           </div>
 
-          <Category filterCategory={filterCategory}/>
+          <Category filterCategory={filter}/>
           <Loading loading={loading} error={error}>
-            <EventList events={x}/>
+            <EventList events={x} loading={loading} error={error}/>
           </Loading>
 				</div>
 			</div>

@@ -3,16 +3,20 @@ const User = require("../models/User")
 
 //Post event 
 exports.addEvent = async(req,res)=>{
-   
     const event = new Event({
-        user :req.body.user ,
-        eventTitle:req.body.eventTitle,
-        category:req.body.category,
-        artist:req.body.artist,
+        user :req.body._id ,
+        eventTitle:req.body.eventtitle,
+        category:req.body.eventcategory,
+        startDate:req.body.startDate,
+        endDate:req.body.endDate,
+        startTime:req.body.startTime,
+        endTime:req.body.startTime,   
+        // artist:req.body.artist,
+        // date
         description:req.body.description,
         eventpicture:req.file.filename,
-        ticketsNbr:req.body.ticketsNbr,
-        ticketsPrice:req.body.ticketsPrice,
+        ticketsNbr:req.body.ticketnumber,
+        ticketsPrice:req.body.ticketprice,
         participant:req.body.participant,
     })
     try {
@@ -41,15 +45,19 @@ exports.getEvent = async(req, res) => {
         res.status(500).json(error)
     }
 }
+
 //get all events
 exports.getEvents = async(req, res) => {
     try {
+        
         const events = await Event.find().populate("user");
         return res.status(200).json(events)
     } catch (error) {
         res.status(500).json(error)
     }
 }
+
+
 
 // buy ticket for event
 exports.buyTicket= async(req,res)=>{
@@ -59,9 +67,12 @@ exports.buyTicket= async(req,res)=>{
       if (!event.participant.includes(req.body.userId)) {
         await currentUser.updateOne({ $push: { participationEvent: req.params.id } });
         await event.updateOne({ $push: { participant: req.body.userId } });
+        currentUser.point += 10;
+        await currentUser.save();
+    
         res.status(200).json(currentUser._id);
     } else {
-        res.status(403).json("you dont buy this tickets");
+        res.status(403).json("You haven't bought this ticket.");
       }
     } catch (error) {
       res.status(500).json(error);
@@ -69,16 +80,26 @@ exports.buyTicket= async(req,res)=>{
   }
   
 //get users in event 
-exports.getUsersEvent = async(req, res)=>{
+exports.getUsersEvent = async (req, res) => {
     try {
-      const event = await Event.findById(req.params.id).populate("participant")
-      const users=event.participant
-      const userList = users.map(user => {
-        const { participationEvent, ...others } = user._doc;
-        return others;
-      });
-      return res.status(200).json(userList);
+      const event = await Event.findById(req.params.id).populate("participant");
+      const users = event.participant;
+    //   const userList = users.map(user => {
+    //     const { participationEvent, ...others } = user._doc;
+    //     return others;
+    //   });
+      return res.status(200).json( event); // Return users with password
     } catch (error) {
       res.status(500).json(error);
     }
   }
+  //get all events for specified user
+exports.getorgEvents = async(req, res) => {
+    try {
+        const user = req.query.id
+        const events = await Event.find({user:user}).populate("participant");
+        return res.status(200).json(events)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}

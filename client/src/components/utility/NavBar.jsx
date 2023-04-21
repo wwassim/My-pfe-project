@@ -31,10 +31,8 @@ import {reset,logout} from '../../redux/auth/authSlice'
     const handleSearchChange = (e) => {
 
       if (events !== null  ){
-        console.log(!e.target.value)
         if (!e.target.value) return setSearchResults(allevent)
         const resultsArray = events.filter(event => event?.eventTitle.includes(e.target.value) || event?.user.firstname.includes(e.target.value))
-        console.log(resultsArray)
         setSearchResults(resultsArray)
       } 
     }
