@@ -2,8 +2,9 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios'
 
 // Get user from localStorage
-const user = JSON.parse(localStorage.getItem('user'))
-const initialState = {user:user ? user : null,users:[],loading:false,error:null};
+// const user = JSON.parse(localStorage.getItem('user'))
+// user ? user :
+const initialState = {user: null,users:[],loading:false,error:null};
 
 //Fetch All Users
 export const fetchUsers =createAsyncThunk("users/fetchUsers",async(_, thunkAPI) => {
@@ -32,7 +33,6 @@ export const insertUser =createAsyncThunk("users/insertUser",async(user,thunkAPI
     console.log(user)
     try {
         const res = await axios.post('auth/register',user)
-       
         return res.data
     } catch (error) {
         return rejectWithValue(error.message)

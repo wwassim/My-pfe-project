@@ -105,8 +105,8 @@ const Team = () => {
         </Box>
       </Box>
       <Box
-        m="40px 0 0 0"
-        height="75vh"
+        // m="20px 0 0 0"
+        height="70vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

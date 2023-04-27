@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Auth from './Auth/Auth';
 import Singup from './Auth/Singup';
+import ResetMail from './Auth/ResetMail'; 
 import Chat from './pages/Chat';
 import Event from './pages/Event';
 import Final from './pages/Final';
@@ -20,6 +21,7 @@ import Rank from './pages/Rank';
 import SucessPayement from './pages/SucessPayement';
 import FailPayment from './pages/FailPayment';
 import Test from './pages/Test';
+import ResetPassword from './Auth/ResetPassword';
 
  
 function App() {
@@ -31,6 +33,8 @@ function App() {
       <Route path="/" element={<Home/>}/>
       <Route path="/auth" element={<Auth/>}/>
       <Route path="/auth/singup" element={<Singup/>}/>
+      <Route path="/auth/reset" element={<ResetMail/>}/>
+      <Route path="/auth/reset/:id" element={<ResetPassword/>}/>
       <Route path="/users/:id" element={<UserProfilePage/>}/>
       <Route path="/users/:id/edit" element={<Final/>}/>
       <Route path="/events/:id" element={<Event/>}/>

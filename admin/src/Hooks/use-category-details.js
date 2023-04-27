@@ -5,14 +5,12 @@ import { useParams } from "react-router-dom";
 const useCategoryDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const {  category } = useSelector((state) => state.categorys);
-   
+  const { loading,error,category } = useSelector((state) => state.categorys);
+
   useEffect(() => {
     dispatch(fetchCategory(id));
-
   }, [dispatch, id]);
-  // console.log(category);
-  return {  category };
+  return {  loading,error, category };
 };
 
 export default useCategoryDetails;

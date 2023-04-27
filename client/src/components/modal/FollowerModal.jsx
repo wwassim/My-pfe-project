@@ -46,16 +46,15 @@ const FollowerModal = (props) => {
     const currentUser = Data
     const usersData=Data.followings
     const classes = useStyles();
-
+    console.log(currentUser)
     const [participation,setParticipation]=useState(
-        currentUser?.participationEvent.includes(event?._id)
+        currentUser.participationEvent.includes(event?._id)
       )
-
+        console.log(participation)
       const handleClick = async () => {
     
         //send event id to localstorage
         localStorage.setItem('enevt',JSON.stringify(event._id))
-       
         if (participation) {
           // dispatch(unfollowUser({ id: user._id, userId }));
           // const updatedCurrentUser = { ...currentUser, followings: currentUser.followings.filter(f => f !== user._id) };

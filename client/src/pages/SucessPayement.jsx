@@ -13,6 +13,7 @@ function SucessPayement() {
     const {user:currentUser}=useSelector((state)=>state.auth)
     const {event}=useSelector((state)=>state.events)
     const id = JSON.parse(localStorage.getItem('enevt'))
+    const userId = JSON.parse(localStorage.getItem('userId'))
     const [participation,setParticipation]=useState(
       currentUser?.participationEvent.includes(event?._id)
     )
@@ -31,17 +32,28 @@ function SucessPayement() {
     useEffect(() => {
       
       if (result === 'SUCCESS' && prevResultRef.current !== 'SUCCESS') {
-        const userId = currentUser?._id;
-  
-        dispatch(getTicket({ id: event._id, userId }));
-        if(participation === false){
-              const updatedCurrentUser = {
-          ...currentUser, 
-            participationEvent: [...currentUser.participationEvent, event._id],
-            point: currentUser.point + 10
-          };
-          localStorage.setItem('user', JSON.stringify(updatedCurrentUser));
-       }
+        
+        if( userId === currentUser?._id){
+          dispatch(getTicket({ id: event._id, userId }));
+          if(participation === false){
+                const updatedCurrentUser = {
+            ...currentUser, 
+              participationEvent: [...currentUser.participationEvent, event._id],
+              point: currentUser.point + 10
+            };
+            localStorage.setItem('user', JSON.stringify(updatedCurrentUser));
+          }
+        }else{
+          dispatch(getTicket({ id: event._id, userId }));
+          // if(participation === false){
+          //       const updatedCurrentUser = {
+          //   ...currentUser, 
+          //     participationEvent: [...currentUser.participationEvent, event._id],
+          //     point: currentUser.point + 10
+          //   };
+          //   localStorage.setItem('user', JSON.stringify(updatedCurrentUser));
+          // }
+        }
       }
       prevResultRef.current = result;
     }, [result, event, currentUser, dispatch]);

@@ -6,7 +6,7 @@ const { upload } = require('./multer');
 //postevent
 Router.post('/',upload.single('eventimage'),eventController.addEvent)
 //update event
-//Router.put('/:id',upload.single("nn"),eventController.)
+Router.put('/:id',upload.single("eventimage"),eventController.updateEvent)
 // delete event 
 Router.delete('/:id',eventController.deleteEvent)
 //get all events for orgs

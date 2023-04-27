@@ -1,5 +1,6 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "./authService";
+import axios from 'axios'
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'))
@@ -47,6 +48,40 @@ export const login   = createAsyncThunk(
 export const logout = createAsyncThunk('auth/logout', async () => {
   await authService.logout()
 })
+///
+export const sendResetPasswordLink = createAsyncThunk("auth/sendResetPasswordLink",async(data,thunkAPI)=>{
+  const {rejectWithValue}=thunkAPI;
+  try {
+    const response= await axios.post('/auth/reset-password-link',data)
+    console.log("hi")
+    return response.data
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+})
+
+// Validate reset password link
+export const validateResetPasswordLink = createAsyncThunk('auth/validateResetPasswordLink', async (userId) => {
+  try {
+    const res = await axios.get(`/auth/reset-password/${userId}`)
+    return res.data.message
+  } catch (error) {
+    console.error(error);
+    throw new Error(error.response.data.errorMessage || 'Internal server error');
+  }
+})
+
+// Reset password
+export const resetPassword = createAsyncThunk('auth/resetPassword', async ({ id, password },thunkAPI) => {
+  console.log(id,password)
+  try {
+    const response = await axios.post(`/auth/reset-password/${id}`, { password })
+    return response.data
+  } catch (error) {
+    console.error(error);
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+})
 
 export const authSlice = createSlice({
     name: "auth",
@@ -92,8 +127,39 @@ export const authSlice = createSlice({
             .addCase(logout.fulfilled, (state) => {
               state.user = null
             })
+            .addCase(sendResetPasswordLink.pending, (state) => {
+              state.isLoading = true;
+            })
+            .addCase(sendResetPasswordLink.fulfilled, (state, action) => {
+              state.isLoading = false
+              state.isSuccess = true
+              state.message = action.payload
+              state.user = null
+            })
+            .addCase(sendResetPasswordLink.rejected, (state, action) => {
+              state.isLoading = false
+              state.isError = true
+              state.message = action.payload
+              state.user = null
+            })
+            .addCase(resetPassword.pending, (state) => {
+              state.isLoading = true;
+            })
+            .addCase(resetPassword.fulfilled, (state, action) => {
+              state.isLoading = false
+              state.isSuccess = true
+              state.message = action.payload
+              state.user = null
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+              state.isLoading = false
+              state.isError = true
+              state.message = action.payload
+              state.user = null
+            })
         },
 })
+
 
 export const { reset } = authSlice.actions;
 export default authSlice.reducer;

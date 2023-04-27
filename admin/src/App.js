@@ -12,6 +12,8 @@ import EditUser from './scenes/team/EditUser'
 import EditCategory from './scenes/category/EditCategory'
 import EditArtist from './scenes/artist/EditArtist'
 import Artist from './scenes/artist'
+import Event from './scenes/event'
+import EditEvent from './scenes/event/EditEvent'
 function App() {
   const [theme,colorMode] =useMode();
   return (
@@ -24,7 +26,6 @@ function App() {
             <Sidebar/>
             <main className='content'>
               <Topbar/>
-              
               <Routes>
                   <Route path="/" element={<Dashboard/>}/>
                   <Route path="/team" element={<Team/>}/>
@@ -34,6 +35,8 @@ function App() {
                   <Route path="/category/:id/edit" element={<EditCategory/>}/>
                   <Route path="/artist" element={<Artist/>}/>
                   <Route path="/artist/:id/edit" element={<EditArtist/>}/>
+                  <Route path="/event" element={<Event/>}/>
+                  <Route path="/event/:id/edit" element={<EditEvent/>}/>
               </Routes>
             </main>
           </div>

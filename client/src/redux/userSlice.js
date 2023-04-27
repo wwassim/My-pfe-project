@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios'
-
+import io from "socket.io-client";
+const socket = io("http://localhost:8900");
 
 const user = JSON.parse(localStorage.getItem('user'))// Get user from localStorage
 const initialState = {user:user ? user : null,users:[],loading:false,error:null};
@@ -20,6 +21,7 @@ export const fetchUsers =createAsyncThunk("users/fetchUsers",async(_, thunkAPI) 
     const {rejectWithValue}=thunkAPI;
     try {
         const res = await axios.get('/users')
+        // socket.emit("users", res.data); 
         return res.data
     } catch (error) {
         return rejectWithValue(error.message)

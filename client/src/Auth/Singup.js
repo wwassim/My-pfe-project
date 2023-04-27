@@ -21,7 +21,9 @@ import {useSelector,useDispatch}from'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { register, reset } from '../redux/auth/authSlice'
+import {io} from "socket.io-client";
 
+const socket = io("ws://localhost:8900");
 
 const theme = createTheme();
 
@@ -71,6 +73,7 @@ const Singup = () => {
     }
 
     dispatch(register(userData))
+    socket.emit("newUser", email);
   };
 
   return (

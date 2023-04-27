@@ -61,17 +61,20 @@ const RightComp = ({event,loading,error}) => {
   
 
     </Card>
-    <Box>
-        <FollowerModal
-        title="buy ticket for ..."
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-        Data={currentUser}
-        event={event}
-    >
-        {/* <ArtistForm itemId={itemId} /> */}
-      </FollowerModal>
-    </Box>
+    {currentUser&&(
+      <Box>
+      <FollowerModal
+      title="buy ticket for ..."
+      openPopup={openPopup}
+      setOpenPopup={setOpenPopup}
+      Data={currentUser}
+      event={event}
+  >
+      {/* <ArtistForm itemId={itemId} /> */}
+    </FollowerModal>
+      </Box>
+    )}
+    
   </>
   )
 }

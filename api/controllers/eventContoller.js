@@ -7,6 +7,8 @@ exports.addEvent = async(req,res)=>{
         user :req.body._id ,
         eventTitle:req.body.eventtitle,
         category:req.body.eventcategory,
+         location:req.body.location,
+         time:req.body.time,
         startDate:req.body.startDate,
         endDate:req.body.endDate,
         startTime:req.body.startTime,
@@ -27,6 +29,22 @@ exports.addEvent = async(req,res)=>{
     }
 }
 //Edit event
+exports.updateEvent = async(req,res)=>{
+        try {
+             const updateFields = { ...req.body };
+    
+            if (req.file) {
+            updateFields.eventpicture = req.file.filename;
+            }
+        const updateEvent = await Event.findByIdAndUpdate(req.params.id,
+          { $set: updateFields },{ new: true }
+        );
+              console.log(updateEvent)
+              res.status(200).json(updateEvent)
+          } catch (error) {
+              res.status(500).json(error);
+          }
+}
 //delete event
 exports.deleteEvent = async(req, res) => {
     try {
@@ -38,6 +56,7 @@ exports.deleteEvent = async(req, res) => {
 }
 //get event 
 exports.getEvent = async(req, res) => {
+    console.log("hhhh")
     try {
         const event = await Event.findById(req.params.id).populate("user");
         return res.status(200).json(event)
@@ -49,7 +68,6 @@ exports.getEvent = async(req, res) => {
 //get all events
 exports.getEvents = async(req, res) => {
     try {
-        
         const events = await Event.find().populate("user");
         return res.status(200).json(events)
     } catch (error) {

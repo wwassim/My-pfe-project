@@ -9,9 +9,8 @@ const useUserDetails = () => {
    
   useEffect(() => {
     dispatch(fetchUser(id));
-
   }, [dispatch, id]);
-
+  console.log(user)
   return {  user };
 };
 

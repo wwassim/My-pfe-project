@@ -1,4 +1,4 @@
-import React, { useState }  from 'react';
+import React, { useEffect, useState }  from 'react';
 import {makeStyles,  Avatar, List, ListItem, ListItemText, ListItemAvatar, ListItemSecondaryAction } from '@material-ui/core';
 import {Button}  from "@material-tailwind/react";
 import axios from "axios";
@@ -40,13 +40,21 @@ const useStyles = makeStyles(theme => ({
 }));
 const ListFollower = ({user,event}) => {
     const classes = useStyles();
-    const [participation,setParticipation]=useState(
-        user?.participationEvent.includes(event?._id)
-      )
+    const [participation, setParticipation] = useState(false);
+
+    useEffect(() => {
+      if (user.participationEvent.includes(event?._id)) {
+        setParticipation(true);
+      } else {
+        setParticipation(false);
+      }
+    }, [user, event]);
+
       console.log(participation)
 const handleClick = async () => {
         //send event id to localstorage
         localStorage.setItem('enevt',JSON.stringify(event._id))
+        localStorage.setItem('userId',JSON.stringify(user._id))
        
         if (participation) {
           // dispatch(unfollowUser({ id: user._id, userId }));
@@ -58,9 +66,9 @@ const handleClick = async () => {
           axios.post('/payment',{ticketsPrice}).then((res)=>{
             const {result}=res.data;
             window.location.href=result.link;
+            setParticipation(!participation);
           }).catch((err)=>{console.error(err);});
         }
-         setParticipation(!participation);
       };
   return (
     <List style={{ width: '100%' }}>

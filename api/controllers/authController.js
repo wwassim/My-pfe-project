@@ -1,7 +1,7 @@
 const User = require("../models/User")
 const Cryptojs = require("crypto-js")
 const jwt = require("jsonwebtoken")
-
+const sendEmail=require('./sendEmail')
 
 exports.registerUser = async (req, res, next) => {
     try {
@@ -35,21 +35,17 @@ exports.registerUser = async (req, res, next) => {
 exports.loginUser = async (req, res, next) => {
     try {
       const user = await User.findOne({ email: req.body.email }).populate("followings");
-  
       if (!user) {
         return res.status(401).json("Wrong credentials.");
       }
-  
       const hashedPassword = Cryptojs.AES.decrypt(
         user.password,
         process.env.PASS_SECRET
       );
       const originalPassword = hashedPassword.toString(Cryptojs.enc.Utf8);
-  
       if (originalPassword !== req.body.password) {
         return res.status(401).json("Wrong credentials.");
       }
-  
       const accessToken = jwt.sign(
         {
           id: user._id,
@@ -58,7 +54,6 @@ exports.loginUser = async (req, res, next) => {
         process.env.JWT_SECRET,
         { expiresIn: "2 days" }
       );
-  
       const { password, ...others } = user._doc;
       res.status(200).json({ ...others, accessToken });
     } catch (err) {
@@ -69,18 +64,58 @@ exports.loginUser = async (req, res, next) => {
       });
     }
   };
-  
-//forget password
-ewports.forgetPassword = async(req,res) => {
+//
+
+
+exports.sendResetPasswordLinkCtrl = async (req, res) => {
+  console.log(req.body)
   try {
-    const user = await User.findOne({ email: req.body.email }).populate("followings");
-    if(!user) {
-      return res.status(401).json("not exist email.");
+    const { email } = req.body;
+
+    // Check if user with the given email exists in the database
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json('User with given email does not exist!' );
     }
+    // Generate reset password link
+    const link = `http://localhost:3000/auth/reset/${user._id}`;
+    // Generate email HTML template
+    const htmlTemplate = `<p>Hi ${user.firstname},</p><p>Please click <a href="${link}">here</a> to reset your password.</p>`;
+    // Send email
+    await sendEmail(user.email, 'Reset your password', htmlTemplate);
+    // Send response to client
+    return res.status(200).json('email sent,check your email!' );
   } catch (error) {
-    console.error(err);
-    res.status(500).json({
-      errorMessage: "An error occurred while logging in.",
-    });
+    console.error(error);
+    return res.status(500).json('Internal server error' );
   }
-}
+};
+
+ ////
+
+exports.getResetPasswordLinkCtrl = async (req,res) => {
+  const user = await User.findById(req.params.id);
+  if(!user) {
+      return res.status(400).json({ message: "invalid link" });
+  }
+  res.status(200).json({ message: "Valid url" });
+};
+////
+
+exports.resetPasswordCtrl = async (req,res) => {
+  console.log(req.params)
+  try {
+    const user = await User.findById(req.params.id);
+    if(!user) {
+     return res.status(400).json( "invalid link" );
+    }
+    console.log(user.password);
+    user.password =  Cryptojs.AES.encrypt(req.body.password, process.env.PASS_SECRET);
+    await user.save();
+    console.log(user.password);
+    res.status(200).json( "Password reset successfully, please log in" );
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json('Internal server error' );
+  }
+};

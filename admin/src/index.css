@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
-
+@import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker.css';
+@import 'react-calendar/dist/Calendar.css';
+@import 'react-clock/dist/Clock.css';
 html,
 body,
 #root,

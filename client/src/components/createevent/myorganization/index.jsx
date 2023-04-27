@@ -1,7 +1,8 @@
  import { useEffect ,useState,useCallback} from "react";
  import { useSelector,useDispatch } from "react-redux"; 
  import {  useNavigate } from "react-router-dom";
-import { Box, Button,Typography, Avatar,useTheme } from "@mui/material";
+import { Box,Typography, Avatar,useTheme } from "@mui/material";
+import {Button} from "@material-tailwind/react";
 import { DataGrid } from "@mui/x-data-grid";
 import Header from "../Header";
 import AddIcon from '@mui/icons-material/Add';
@@ -66,21 +67,12 @@ const Myorganization = () => {
              <Box m="20px">
     <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Events" subtitle="Managing Events" />
-      <Box>
-        <Button
-          sx={{
-            // backgroundColor: colors.blueAccent[700],
-            // color: colors.grey[100],
-            fontSize: "14px",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            border: 1,
-             }}
-             onClick={() => navigate(`/addevent`)} 
-        >
-            New event
+      <Box className="w-[200px]">
+        <Button className="rounded-lg p-1 w-full bg-violet-700  text-white"  onClick={() => navigate(`/addevent`)}  >
+           New event
           <AddIcon/>
         </Button>
+        
       </Box>
     </Box>
     <Box className="col-span-8 row-span-2 bg-gray-300  rounded-lg">

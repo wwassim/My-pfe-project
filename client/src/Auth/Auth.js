@@ -135,7 +135,7 @@ const Auth=()=>{
               Sign In
             </Button>
             <Grid container>
-              <Grid item xs component={Link} to="#" variant="body2">            
+              <Grid item xs component={Link} to="/auth/reset" variant="body2">            
                   Forgot password?     
               </Grid>
               <Grid item component={Link} to="/auth/singup" variant="body2">

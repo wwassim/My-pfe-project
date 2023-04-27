@@ -11,6 +11,7 @@ import Dropzone from "react-dropzone";
 import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import {updateUser} from '../../../redux/userSlice'
+import Loading from "../../utility/Loading";
 
 
 const checkoutSchema = yup.object().shape({
@@ -24,7 +25,8 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const navigate = useNavigate();
   const dispatch = useDispatch()
-  const {user:currentUser}= useSelector((state) => state.auth)
+  const {isLoding,isError,user:currentUser}= useSelector((state) => state.auth)
+  
 
 
   useEffect(()=>{
@@ -35,10 +37,10 @@ const Form = () => {
 
   const formik = useFormik({
     initialValues: {
-      phonenumber:'',
-      ribNumber:'',
-      frontcin:'',
-      backcin:'',
+      phonenumber:currentUser?currentUser.phonenumber:'',
+      ribNumber:currentUser?currentUser.ribNumber:'',
+      frontcin:currentUser?currentUser.frontcin:'',
+      backcin:currentUser?currentUser.backcin:'',
     },
     validationSchema:checkoutSchema,
     onSubmit: (values) => {
@@ -62,6 +64,7 @@ const Form = () => {
  
   return (
     <Box m="20px">
+      <Loading loading={isLoding} error={isError}>
       <Header title="CREATE USER" subtitle="Create a New User Profile" />   
           <form onSubmit={formik.handleSubmit}>
             <Box
@@ -185,6 +188,7 @@ const Form = () => {
               </Button>
             </Box>
           </form>
+      </Loading>
     </Box>
   );
 };
