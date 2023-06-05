@@ -22,7 +22,7 @@ import DatePicker from "react-horizontal-datepicker";
 
     useEffect(() => {
       dispatch(fetchEvents());
-     },[useDispatch])
+     },[useDispatch,events])
   
      const filter = (category,selectedDate)=>{
       if(category==="all"){

@@ -2,7 +2,7 @@ import { useEffect ,useState,useCallback} from "react";
 import { useSelector,useDispatch } from "react-redux"; 
 import {  useNavigate } from "react-router-dom";
 import { Box, Button,Typography, Avatar,useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid,GridToolbar  } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import {fetchEvents,deleteEvent} from "../../redux/eventSlice"
@@ -35,7 +35,8 @@ const Event = () => {
     const colors = tokens(theme.palette.mode);
     const columns = [
         { field: "_id", headerName: "ID",flex:1, },
-        { field: "eventpicture",headerName: "Picture",width: 100,renderCell: (params) => (<img src={`http://localhost:5000/assets/${params.row.eventpicture}`} style={{ maxWidth: "100%", maxHeight: "100%" }}/>),sortable: false,filterable: false,},
+        // { field: "eventpicture",headerName: "Picture",width: 100,renderCell: (params) => (<img src={`http://localhost:5000/assets/${params.row.eventpicture}`} style={{ maxWidth: "100%", maxHeight: "100%" }}/>),sortable: false,filterable: false,},
+        { field: "eventpicture",headerName: "Picture",width: 100,renderCell: (params) => (<Avatar src={`http://localhost:5000/assets/${params.row.eventpicture}`} variant="rounded" sx={{ width: 80}}/>),sortable: false,filterable: false,},
         { field: "eventTitle", headerName: "event Title", flex: 1,cellClassName: "name-column--cell",},
         { field: "creator",headerName: "Creator",flex: 1,cellClassName: "name-column--cell",renderCell: (params) => {return params.row.user.firstname;}},
         { field: "participant",headerName: "Participants",flex: 1,renderCell: (params) => (<span>{params.row.participant.length} </span>), sortable: false,filterable: false,flex: 1,},
@@ -78,13 +79,16 @@ const Event = () => {
     return (
       <Box m="20px">
         <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Header title="Events" subtitle="Managing Events" />
+            <Header title="EVENTS" subtitle="Managing Events" />
         </Box>
         <Box
         height="70vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
+          },
+          "& .MuiButtonBase-root": {
+            color:  colors.primary[100],
           },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
@@ -108,7 +112,21 @@ const Event = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection getRowId={(row) => row._id} columns={columns} rows={events}/>
+        <DataGrid 
+         getRowId={(row) => row._id} columns={columns} rows={events}  
+        disableColumnFilter
+        disableColumnSelector
+        disableDensitySelector
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            csvOptions: { disableToolbarButton: true } ,
+            printOptions:{hideFooter: true,hideToolbar: true,fileName:"Events List"},
+            // printOptions: { disableToolbarButton: true } ,
+            showQuickFilter: true,
+            quickFilterProps: { debounceMs: 500 }
+          }
+        }}/>
         </Box>
       </Box>
     );

@@ -11,6 +11,7 @@ const EventSchema  = new mongoose.Schema({
     ticketsNbr:{type: Number, required: true},
     ticketsPrice:{type: Number, required: true},
     participant:{ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [], },
+    remboursement:{ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [], },
     time:{type: String, required: true},
     startDate:{type: String, required: true},
     endDate:{type: String, required: true},

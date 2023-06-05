@@ -39,7 +39,6 @@ exports.updateEvent = async(req,res)=>{
         const updateEvent = await Event.findByIdAndUpdate(req.params.id,
           { $set: updateFields },{ new: true }
         );
-              console.log(updateEvent)
               res.status(200).json(updateEvent)
           } catch (error) {
               res.status(500).json(error);
@@ -56,7 +55,6 @@ exports.deleteEvent = async(req, res) => {
 }
 //get event 
 exports.getEvent = async(req, res) => {
-    console.log("hhhh")
     try {
         const event = await Event.findById(req.params.id).populate("user");
         return res.status(200).json(event)
@@ -86,7 +84,9 @@ exports.buyTicket= async(req,res)=>{
         await currentUser.updateOne({ $push: { participationEvent: req.params.id } });
         await event.updateOne({ $push: { participant: req.body.userId } });
         currentUser.point += 10;
+        event.ticketsNbr -= 1;
         await currentUser.save();
+        await event.save();
     
         res.status(200).json(currentUser._id);
     } else {
@@ -95,12 +95,12 @@ exports.buyTicket= async(req,res)=>{
     } catch (error) {
       res.status(500).json(error);
     }
-  }
+}
   
 //get users in event 
 exports.getUsersEvent = async (req, res) => {
     try {
-      const event = await Event.findById(req.params.id).populate("participant");
+      const event = await Event.findById(req.params.id).populate("participant").populate("remboursement");
       const users = event.participant;
     //   const userList = users.map(user => {
     //     const { participationEvent, ...others } = user._doc;
@@ -121,3 +121,4 @@ exports.getorgEvents = async(req, res) => {
         res.status(500).json(error)
     }
 }
+

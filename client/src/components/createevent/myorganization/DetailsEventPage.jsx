@@ -23,7 +23,8 @@ const DetailsEventPage = () => {
   useEffect(() => {
     dispatch(fetchParticipant(id));
    },[dispatch])
-   console.log(event)
+
+
   const columns=[
     {field: "index",headerName: "Index",width: 100,
       renderCell: (params) => {
@@ -36,7 +37,7 @@ const DetailsEventPage = () => {
     { field: "email", headerName: "Email", flex: 1,cellClassName: "name-column--cell",},
 
   ]
-
+  console.log(event)
   return (
      <div className="bg-neutral-100 h-screen w-screen overflow-hidden flex flex-row">
     <SidebarOrg/>
@@ -50,7 +51,7 @@ const DetailsEventPage = () => {
         <Box className='grid grid-cols-2 md:grid-cols-4 gap-6 py-6'>
           <Box className="bg-gray-300 flex items-center justify-center rounded-lg">
             <StatBox
-              title={`DT ${(event.ticketsPrice*event.participant.length)+(Rembou*RembLen)}`}
+              title={`DT ${(event.ticketsPrice*event.participant.length)+((event.ticketsPrice*0.25)*event.remboursement.length)}`}
               subtitle="Total Income"
               icon={< PointOfSaleIcon sx={{fontSize: "26px" }}/>
               }
@@ -73,7 +74,7 @@ const DetailsEventPage = () => {
           </Box>
           <Box className="bg-gray-300 flex items-center justify-center rounded-lg">
             <StatBox
-              title={`DT ${Rembou*RembLen}`}
+              title={`DT ${(event.ticketsPrice*0.25)*event.remboursement.length}`}
               subtitle="refund Incom"           
               icon={<RequestQuoteIcon sx={{fontSize: "26px" }} />
               }
@@ -110,8 +111,8 @@ const DetailsEventPage = () => {
                      },
                  }}
                  >
-                  {/*   */}
-               <DataGrid getRowId={(row) => row._id} checkboxSelection  columns={columns} rows={event?.participant}/>
+                  {/* getRowId={(row) => row?._id}  */}
+               <DataGrid  getRowId={(row) => row?._id} columns={columns} rows={event?.participant} />
               </Box>
             </Box>
           {/* Remborssement */}
@@ -123,23 +124,24 @@ const DetailsEventPage = () => {
                   refund
                 </Typography>
               </Box>
-              {/* {mockTransactions.map((transaction, i) => ( */}
-              {/* key={`${transaction.txId}-${i}`} */}
-              <Box className="flex justify-between items-center p-[15px] border-b-2 border-solid border-white ">
+              {event?.remboursement.map((item, i) => (
+             
+              <Box key={i} className="flex justify-between items-center p-[15px] border-b-2 border-solid border-white ">
                   <Box>
                     <Typography>
-                      wassim
-                      {/* {transaction.user} */}
+                   
+                      {item.firstname}
                     </Typography>
                   </Box>
                   <Box >
-                    hhh
+                 
+                     {item.lastname}
                   </Box>
                   <Box className=" bg-teal-400  p-1  rounded-md">
-                    $20
+                     { event.ticketsPrice*0.25} Dt
                   </Box>
               </Box>
-              {/*  ))} */}
+                ))}
             </Box>
          </Box> 
     </Box>

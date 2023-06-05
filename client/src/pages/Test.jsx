@@ -1,136 +1,82 @@
-import { useState, useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Chart from "chart.js/auto";
-import { fetchUsers } from "../redux/userSlice";
-import { Box, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { DataGrid } from "@mui/x-data-grid";
+import { fetchEvents } from "../redux/eventSlice";
 import DateTimeRangePicker from "@wojtekmaj/react-datetimerange-picker";
 
-
-const Test = () => {
-  const { users } = useSelector((state) => state.users);
-  const dispatch = useDispatch();
-  const canvasRef = useRef(null);
-  const chartRef = useRef(null);
+const EventChart = () => {
   const [selectedRange, setSelectedRange] = useState([null, null]);
 
+  const dispatch = useDispatch();
+  const { loading, error, events } = useSelector((state) => state.events);
 
   useEffect(() => {
-    const ctx = canvasRef.current.getContext("2d");
+    dispatch(fetchEvents(selectedRange));
+  }, [dispatch, selectedRange]);
 
-    if (chartRef.current) {
-      chartRef.current.destroy();
-    }
+  const sortDataByEventCount = (events) => {
+    // Count the number of events per user
+    const eventCounts = {};
+    events.forEach((event) => {
+      const user = `${event.user._id}-${event.user.firstname}`;
 
-    let filteredUsers = users;
-
-    if (selectedRange !== null) {
-      const startDate = selectedRange[0];
-      const endDate = selectedRange[1];
-
-      filteredUsers = users.filter((user) => {
-        const userDate = new Date(user.createdAt);
-        if (startDate && endDate) {
-          return userDate >= startDate && userDate <= endDate;
-        } else if (startDate) {
-          return userDate >= startDate;
-        } else if (endDate) {
-          return userDate <= endDate;
-        } else {
-          return true;
-        }
-      });
-    }
-
-    const dates = [];
-    const userCounts = [];
-
-    filteredUsers.forEach((user) => {
-      const date = new Date(user.createdAt);
-      const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-      if (!dates.includes(formattedDate)) {
-        dates.push(formattedDate);
-        userCounts.push(1);
+      if (eventCounts[user]) {
+        eventCounts[user]++;
       } else {
-        const index = dates.indexOf(formattedDate);
-        userCounts[index]++;
+        eventCounts[user] = 1;
       }
     });
 
-    chartRef.current = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: dates,
-        datasets: [
-          {
-            label: "Registered Users",
-            data: userCounts,
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          xAxes: [
-            {
-              type: "time",
-              distribution: "linear",
-              time: {
-                unit: "day",
-              },
-            },
-          ],
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-                stepSize: Math.max(Math.ceil(filteredUsers.length / 5), 1), // set stepSize as the ceiling of the division of filteredUsers.length by 5 to ensure integer values
-                suggestedMax: filteredUsers.length,
-                precision: 0, // set precision to 0 to display only integers
-              },
-            },
-          ],
-        },
-      },
+    // Sort users based on event counts
+    const sortedUsers = Object.keys(eventCounts).sort(
+      (a, b) => eventCounts[b] - eventCounts[a]
+    );
+
+    // Generate sorted data
+    const sortedData = sortedUsers.map((user, index) => {
+      const [userId, firstname] = user.split("-");
+      return {
+        id: index + 1,
+        user: firstname,
+        userId,
+        eventCount: eventCounts[user],
+      };
     });
 
-  
-
-  }, [users, selectedRange,dispatch]);
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
-      dispatch(fetchUsers());
-    }, 5000);
-  
-    return () => clearInterval(timer);
-  }, [dispatch]);
-  
-  useEffect(() => {
-    dispatch(fetchUsers());
-  },[dispatch])
-  const handleRangeChange = (range) => {
-    setSelectedRange(range);
+    return sortedData;
   };
 
+  const filteredEvents = selectedRange?.[0] && selectedRange?.[1]
+    ? events.filter((event) => {
+        const eventDate = new Date(event.createdAt);
+        const startDate = new Date(selectedRange[0]);
+        const endDate = new Date(selectedRange[1]);
+        return eventDate >= startDate && eventDate <= endDate;
+      })
+    : events;
+
+  const sortedData = sortDataByEventCount(filteredEvents);
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "user", headerName: "User", width: 150 },
+    { field: "userId", headerName: "UserId", width: 150 },
+    { field: "eventCount", headerName: "Event Count", width: 150 },
+  ];
+
   return (
-    <div className="ml-2">
-      <h2>Registered Users: {users.length}</h2>
+    <div>
       <DateTimeRangePicker
-        onChange={handleRangeChange}
         value={selectedRange}
-        format="MM/dd/yyyy h:mm a"
+        onChange={setSelectedRange}
+        format="y-MM-dd HH:mm:ss"
+        // clearIcon={null}
       />
-      <Box className="w-[350px] h-[350px]">
-        <div  className="w-full h-full">
-         <canvas ref={canvasRef}></canvas>
-        </div>
-      </Box>
+      <div style={{ height: 400, width: "100%" }}>
+        <DataGrid rows={sortedData} columns={columns} />
+      </div>
     </div>
   );
-  }
-export default Test;
+};
+
+export default EventChart;

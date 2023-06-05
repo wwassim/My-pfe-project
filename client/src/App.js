@@ -22,6 +22,8 @@ import SucessPayement from './pages/SucessPayement';
 import FailPayment from './pages/FailPayment';
 import Test from './pages/Test';
 import ResetPassword from './Auth/ResetPassword';
+import UpdateProfile from './pages/UpdateProfile';
+import UpdateEvent from './pages/UpdateEvent';
 
  
 function App() {
@@ -41,15 +43,16 @@ function App() {
       <Route path="/wish" element={<WishList/>}/>
       <Route path="/chat" element={<Chat/>}/>
       <Route path="/rank" element={<Rank/>}/>
-      <Route path="/:id/myevent" element={<Myevents/>}/>
+      <Route path="myevent/:id" element={<Myevents/>}/>
       <Route path="/addevent" element={<AddEvent/>}/>
       <Route path="/genaral" element={<General/>}/>
       <Route path="/myorganazation" element={<Myorganization/>}/>
       <Route path="/myorganazation/:id/details" element={<DetailsEventPage/>}/>
+      <Route path="/myorganazation/:id/edit" element={<UpdateEvent/>}/>
       <Route path="/success" element={<SucessPayement/>}/>
       <Route path="/fail" element={<FailPayment/>}/>
      
-       <Route path="/jj" element={<Test locationName="tunis"/>}/>
+      <Route path="/jj" element={<Test locationName="tunis"/>}/>
       <Route path="/map" element={<SendLocationPage/>}/> 
      </Routes>
 

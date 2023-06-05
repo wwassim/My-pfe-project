@@ -118,6 +118,11 @@ const EventChart = () => {
 
   return (
     <div  style={{ height: "100%" }}>
+      {/* <DateTimeRangePicker
+        onChange={handleRangeChange}
+        value={selectedRange}
+        format="MM/dd/yyyy h:mm a"
+      /> */}
        <canvas ref={canvasRef}></canvas>
     </div>
   )

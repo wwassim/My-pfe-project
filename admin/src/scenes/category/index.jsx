@@ -2,7 +2,7 @@ import { useEffect ,useState,useCallback} from "react";
 import { useSelector,useDispatch } from "react-redux"; 
 import {  useNavigate } from "react-router-dom";
 import { Box, Button,Typography, Avatar,useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid,GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import AddIcon from '@mui/icons-material/Add';
@@ -16,8 +16,9 @@ const Category = () => {
   const [openPopup, setOpenPopup] = useState(false)
   const [itemId , setItempop] = useState(null)
   const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const [updateCounter, setUpdateCounter] = useState(0); 
+  const dispatch = useDispatch();
+  const [updateCounter, setUpdateCounter] = useState(0); 
+  
     useEffect(()=>{
       dispatch(fetchCategorys())
     },[dispatch,updateCounter])
@@ -38,9 +39,9 @@ const Category = () => {
   const colors = tokens(theme.palette.mode);
   const columns = [
     { field: "_id", headerName: "ID",flex:1, },
-    { field: "picture", headerName: "Picture", width: 60,
-    renderCell: (params) => <img src={`http://localhost:5000/assets/${params.row.picture}`} />, 
-    sortable: false,filterable: false,flex:1, 
+    { field: "picture", headerName: "Picture", width: 80,
+    renderCell: (params) =><Avatar src={`http://localhost:5000/assets/${params.row.picture}`} />, 
+    sortable: false,filterable: false, 
     },
     { field: "name", headerName: "Name", flex: 1,cellClassName: "name-column--cell",},
     {field: 'actions',headerName: 'Actions',flex: 1,renderCell: (params) => {
@@ -83,7 +84,7 @@ const Category = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Header title="Categorys" subtitle="Managing Categorys" />
+          <Header title="CATEGORYS" subtitle="Managing Categorys" />
         <Box>
           <Button
             sx={{
@@ -107,6 +108,9 @@ const Category = () => {
           "& .MuiDataGrid-root": {
             border: "none",
           },
+          "& .MuiButtonBase-root": {
+            color:  colors.primary[100],
+          },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
           },
@@ -127,9 +131,25 @@ const Category = () => {
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,
           },
+          " .MuiDataGrid-exportButton": { // Add button styles here
+            backgroundColor: colors.blueAccent[700],
+          },
         }}
       >
-        <DataGrid checkboxSelection  getRowId={(row) => row._id} rows={categorys} columns={columns} />
+        <DataGrid   getRowId={(row) => row._id} rows={categorys} columns={columns} 
+           disableColumnFilter
+           disableColumnSelector
+           disableDensitySelector
+           slots={{ toolbar: GridToolbar }}
+           slotProps={{
+             toolbar: {
+               csvOptions: { disableToolbarButton: true } ,
+               printOptions:{hideFooter: true,hideToolbar: true,fileName:"Events List"},
+               // printOptions: { disableToolbarButton: true } ,
+               showQuickFilter: true,
+               quickFilterProps: { debounceMs: 500 }
+             }
+           }}/>
       </Box>
       <PopUp
                 title="Employee Form"

@@ -10,7 +10,6 @@ const addUser = (userId, socketId) => {
   !users.some((user) => user.userId === userId) &&
     users.push({ userId, socketId });
 };
-
 const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
@@ -28,20 +27,24 @@ io.on("connection", (socket) => {
     addUser(userId, socket.id);
     io.emit("getUsers", users);
   });
-
   //send and get message
   socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-    const user = getUser(receiverId);
-    io.to(user.socketId).emit("getMessage", {
-      senderId,
-      text,
-    });
+    console.log(senderId, receiverId, text)
+    const user = getUser(receiverId);   
+    console.log(user.socketId)
+    if (user && user.socketId) {
+      io.to(user.socketId).emit("getMessage", {
+        senderId,
+        text,
+      });
+    } else {
+      console.log("User or socketId not found");
+    }
   });
-
   //when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected!");
-    removeUser(socket.id);
+     removeUser(socket.id);
     io.emit("getUsers", users);
   });
 });

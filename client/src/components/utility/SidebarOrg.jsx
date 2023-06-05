@@ -19,7 +19,7 @@ function SidebarOrg() {
       <div>
       <NavLink to="/">
         <div class="w-max p-2.5">
-          <h6 className='text-3xl font-bold'>Billet.tn</h6>
+          <h6 className='text-3xl font-bold'>Reservi</h6>
         </div>
       </NavLink>
         <ul class="mt-6 space-y-2 tracking-wide">
@@ -47,15 +47,6 @@ function SidebarOrg() {
             <div class="group flex items-center space-x-4 rounded-md px-4 py-3 ">
               <TelegramIcon/>
               <span class="group-hover:text-gray-700">Chat</span>
-            </div>
-          </NavLink>
-          </li>
-
-          <li class="min-w-max">
-          <NavLink to="/Analyse" className={({isActive})=>isActive?"text-black-500":"text-gray-600"} aria-label="Rank" >
-            <div class="group flex items-center space-x-4 rounded-md px-4 py-3 ">
-              <AutoAwesomeIcon/>
-              <span class="group-hover:text-gray-700">Analyse</span>
             </div>
           </NavLink>
           </li>

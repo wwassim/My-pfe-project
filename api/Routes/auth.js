@@ -7,7 +7,8 @@ Router.post('/register',auth.registerUser)
 
 //Login 
 Router.post('/login',auth.loginUser)
-
+//Admin Login 
+Router.post('/adminlogin',auth.loginAdmin)
 //
 
 Router.post("/reset-password-link", auth.sendResetPasswordLinkCtrl);

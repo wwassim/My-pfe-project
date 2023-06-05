@@ -23,13 +23,16 @@ const Rankgrid = () => {
       }, [users]);
 
     // Find current user's rank
-    const currentUserRank = sortedUsers.findIndex(user => user._id === currentUser._id) + 1;
+    let currentUserRank
+    if(currentUser){
+        currentUserRank  = sortedUsers.findIndex(user => user._id === currentUser._id) + 1;    
+    }
 
     const columns=[
-         {field: "index",headerName: "Rank",width: 100,renderCell: (params) => {const rowIndex = users.findIndex(row => row === params.row); return <span>{rowIndex + 1}</span>; }},
+         {field: "index",headerName: "Rank",width: 100,renderCell: (params) => {const rowIndex = sortedUsers.findIndex(row => row === params.row); return <span>{rowIndex + 1}</span>; }},
          { field: "firstname", headerName: "first Name",cellClassName: "name-column--cell",},
          { field: "lastname", headerName: "Last Name", flex: 1,cellClassName: "name-column--cell",},
-         { field: "participant", headerName: "Events", flex: 1,renderCell: (params) =>  (<span>{params.row.participationEvent.length} </span>)},
+         { field: "participant", headerName: "Events", flex: 1,renderCell: (params) =>  <span>{params.row.participationEvent.length} </span>},
          { field: "point", headerName: "Billet Point", flex: 1,cellClassName: "name-column--cell",},
     
         ]
@@ -37,12 +40,14 @@ const Rankgrid = () => {
     <Box>
          <Loading loading={loading} error={error}>
             <Box className="bg-gray-300 flex items-center justify-center rounded-lg mb-5">
-                    <StatBox
-                    title={`Current rank : ${ currentUserRank} | ${users.length}`}
-                    subtitle="Rankings"
-                    icon={< StairsIcon sx={{fontSize: "26px" }}/> 
-                    }
-                    />
+                   {currentUser&&(
+                         <StatBox
+                         title={`Current rank : ${ currentUserRank} | ${users.length}`}
+                         subtitle="Rankings"
+                         icon={< StairsIcon sx={{fontSize: "26px" }}/> 
+                         }
+                         />
+                   )}  
             </Box>
             <Box className="col-span-8 row-span-2 bg-gray-300  rounded-lg">
                 <Box className="flex justify-between items-center border-b-2 border-white bg-indigo-200 rounded-lg p-2">

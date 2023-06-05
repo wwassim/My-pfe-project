@@ -48,12 +48,13 @@ export const login   = createAsyncThunk(
 export const logout = createAsyncThunk('auth/logout', async () => {
   await authService.logout()
 })
+
 ///
 export const sendResetPasswordLink = createAsyncThunk("auth/sendResetPasswordLink",async(data,thunkAPI)=>{
   const {rejectWithValue}=thunkAPI;
   try {
     const response= await axios.post('/auth/reset-password-link',data)
-    console.log("hi")
+  
     return response.data
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -73,7 +74,6 @@ export const validateResetPasswordLink = createAsyncThunk('auth/validateResetPas
 
 // Reset password
 export const resetPassword = createAsyncThunk('auth/resetPassword', async ({ id, password },thunkAPI) => {
-  console.log(id,password)
   try {
     const response = await axios.post(`/auth/reset-password/${id}`, { password })
     return response.data
@@ -93,7 +93,9 @@ export const authSlice = createSlice({
             state.isError = false
             state.message = ''
         },
-       
+        setUserPhoto:(state,action)=>{
+          state.user.firstname=action.payload
+        },
         },extraReducers:(builder)=>{
             builder
             .addCase(register.pending, (state) => {
@@ -161,5 +163,5 @@ export const authSlice = createSlice({
 })
 
 
-export const { reset } = authSlice.actions;
+export const { reset,setUserPhoto } = authSlice.actions;
 export default authSlice.reducer;

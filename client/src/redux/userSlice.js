@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios'
-import io from "socket.io-client";
-const socket = io("http://localhost:8900");
+import {setUserPhoto} from "./auth/authSlice"
+// import { useDispatch } from "react-redux";
 
 const user = JSON.parse(localStorage.getItem('user'))// Get user from localStorage
 const initialState = {user:user ? user : null,users:[],loading:false,error:null};
@@ -21,7 +21,6 @@ export const fetchUsers =createAsyncThunk("users/fetchUsers",async(_, thunkAPI) 
     const {rejectWithValue}=thunkAPI;
     try {
         const res = await axios.get('/users')
-        // socket.emit("users", res.data); 
         return res.data
     } catch (error) {
         return rejectWithValue(error.message)
@@ -66,8 +65,8 @@ export const fetchTicket = createAsyncThunk("users/fetchTicket",async(id,thunkAP
         return rejectWithValue(error.message)
     }
 })
-//update user
 
+//update user
 // export const updateUser =createAsyncThunk("users/updateUser",async (item,thunkAPI)=>{
 //     const{rejectWithValue} = thunkAPI;
 //      const id=item.get("_id")
@@ -83,20 +82,54 @@ export const fetchTicket = createAsyncThunk("users/fetchTicket",async(id,thunkAP
 //     }
 // })
 export const updateUser =createAsyncThunk("users/updateUser",async (item,thunkAPI)=>{
-    const{rejectWithValue} = thunkAPI;
+    const{rejectWithValue,dispatch } = thunkAPI;
     const id=item.get("_id")
     const config = {header: { "content-type": "multipart/form-data" }}
-    console.log(item)
     try {
       const res= await axios.put(`http://localhost:5000/users/${id}`,item,config,{headers:{
         "content-type": "application/json;charset=utf-8",
        }})
        const data =  res.data
+       dispatch(setUserPhoto(data.firstname))
+       const currentUser=JSON.parse(localStorage.getItem("user"))
+        currentUser.firstname=data.firstname
+        currentUser.profileImg=data.profileImg
+        localStorage.setItem("user",JSON.stringify(currentUser))
        return data;
     } catch (error) {
         return rejectWithValue(error.message)
     }
 })
+//like User 
+export const likeUser =createAsyncThunk("/users/likeUser",async(data, thunkAPI) => {
+    const {rejectWithValue}=thunkAPI;
+    const id=data.id
+    
+    const config = {header: { "content-type": "multipart/form-data" }}
+    try {
+       const res= await axios.put(`/users/${id}/like`,data,config,{headers:{
+        "content-type": "application/json;charset=utf-8",
+       }})
+       return res.data
+    } catch (error) {
+        return rejectWithValue(error.message)
+    } 
+})
+//Remboursement
+export const remboursement = createAsyncThunk("users/remboursement",async(data,thunkAPI)=>{
+    const {rejectWithValue}=thunkAPI;
+    const id=data.id
+    const config = {header: { "content-type": "multipart/form-data" }}
+    try {
+        const res = await axios.put(`/users/${id}/rembouressement`,data,config,{headers:{
+            "content-type": "application/json;charset=utf-8",
+           }})
+        return  res.data
+    } catch (error) {
+        return rejectWithValue(error.message)
+    }
+})
+
 const userSlice = createSlice({
     name:"users",
     initialState,
@@ -171,6 +204,30 @@ const userSlice = createSlice({
             state.user  = action.payload;
         })
         .addCase(updateUser.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
+        .addCase(likeUser.pending,(state)=>{
+            state.loading=true;
+            state.error=false;
+        })
+        .addCase(likeUser.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.user=action.payload
+        })
+        .addCase(likeUser.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
+        .addCase(remboursement.pending,(state)=>{
+            state.loading=true;
+            state.error=false;
+        })
+        .addCase(remboursement.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.user=action.payload
+        })
+        .addCase(remboursement.rejected,(state,action)=>{
             state.loading =false;
             state.error=true;
         })

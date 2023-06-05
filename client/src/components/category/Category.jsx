@@ -26,7 +26,7 @@ const Category = ({ filterCategory }) => {
                         <div key={index}>
                             <div className='bg-white rounded-lg p-4 flex justify-between items-center cursor-pointer' onClick={() => filterCategory(category.name)}>
                                 <h2 className='font-bold sm:text-xl'>{category.name}</h2>
-                                <img src="https://www.shutterstock.com/image-vector/running-man-athletics-marathon-summer-260nw-1347864386.jpg" alt="loading" className='w-10' />
+                                <img src={ `http://localhost:5000/assets/${category.picture}`} alt="loading" className='w-10' />
                             </div>
                         </div>
                     ))}

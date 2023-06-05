@@ -4,14 +4,27 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { Avatar } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import { useSelector } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from '../../redux/userSlice';
+import { useEffect, useState } from 'react';
+import Loading from './Loading';
+import { pink } from '@mui/material/colors';
+import Follower from '../profile/Followers';
 
 function Sidebar() {
-  const { user } =  useSelector((state) => state.auth)
- 
+  const dispatch= useDispatch()
+  const {user:currentUser}= useSelector((state) => state.auth)
+  const {error,loading,users}= useSelector((state) => state.users)
+  const [openPopup, setOpenPopup] = useState(false)//mtaa3 follower modal
   
+  useEffect(()=>{
+    dispatch(fetchUsers())
+  },[dispatch])
+
+
   return (
 
   <div class="sidebar min-h-[3.35rem] w-[3.35rem] lg:w-56 overflow-hidden border-r hover:bg-white hover:shadow-lg">
@@ -19,7 +32,7 @@ function Sidebar() {
       <div>
       <NavLink to="/">
         <div class="w-max p-2.5">
-          <h6 className='text-3xl font-bold'>Billet.tn</h6>
+          <h6 className='text-3xl font-bold'>Reservi</h6>
         </div>
       </NavLink>
         <ul class="mt-6 space-y-2 tracking-wide">
@@ -34,10 +47,11 @@ function Sidebar() {
           </li>
 
           <li class="min-w-max">
-          {  user!== null&&(
-          <NavLink to={`/${user._id}/myevent`} className={({isActive})=>isActive?"text-black-500":"text-gray-600"} aria-label="Tickets" >
+          {  currentUser!== null&&(
+          <NavLink to={`/myevent/${currentUser._id}`} className={({isActive})=>isActive?"text-black-500":"text-gray-600"} aria-label="Tickets" >
             <div class="bg group flex items-center space-x-4 rounded-full px-4 py-3 ">
-              <ConfirmationNumberIcon/>
+             {currentUser?.participationEvent?.length>0 ? <ConfirmationNumberIcon sx={{ color: pink[500] }}/> :<ConfirmationNumberIcon/>}
+              
               <span class="group-hover:text-gray-700">Tickets</span>
             </div>
           </NavLink>
@@ -52,6 +66,18 @@ function Sidebar() {
               <span class="group-hover:text-gray-700">Chat</span>
             </div>
           </NavLink>
+          </li>
+          
+          <li className="min-w-max cursor-pointer">
+            <div
+              className={`group flex items-center space-x-4 rounded-md px-4 py-3 ${
+                openPopup ? 'text-black-500' : 'text-gray-600'
+              }`}
+              onClick={()=>{setOpenPopup(true)}}
+            >
+              <PersonAddIcon />
+              <span className="group-hover:text-gray-700">Add friend</span>
+            </div>
           </li>
 
           <li class="min-w-max">
@@ -74,22 +100,45 @@ function Sidebar() {
         </ul>
       </div>
       {/* Profile */}
-    {  user!== null&&(
-    <NavLink to={`/users/${user._id}`}>
+    {  currentUser!== null&&(
+      <NavLink to={`/users/${currentUser._id}`}>
+      {/* <Loading error={error} loading={loading}> */}
     <div className="pt-2 px-2 flex justify-between border-t border-gray-300/40 dark:border-gray-700">
       <div className="w-max flex item-center gap-4">
-        <img className="w-10 h-10 rounded-full" src='https://cdn-icons-png.flaticon.com/512/147/147144.png' alt='loading'/>
+              {currentUser?.profileImg ?(
+                <Avatar
+                  style={{ width: "40px", height: "40px" }}
+                  alt="Remy Sharp"
+                  src={ `http://localhost:5000/assets/${currentUser?.profileImg}`}
+                />
+              ):(
+                <Avatar
+                    style={{ width: "40px", height: "40px" }}
+                    alt="Remy Sharp"
+                    src="https://cdn-icons-png.flaticon.com/512/147/147144.png"
+                  />
+              )}
         <div>
-          <h6 className="text-gray-600 font-medium dark:text-gray-200">{user.firstname}</h6>
+          <h6 className="text-gray-600 font-medium dark:text-gray-200">{currentUser.firstname}</h6>
           <span className="block -mt-0.5 text-xs text-gray-500">Profile</span>
         </div>
       </div>
       <DensityMediumIcon/>
     </div>
+    {/*    */}
     </NavLink>
     )
     }
     </div>
+     <Follower
+      title="USERS"
+      openPopup={openPopup}
+      setOpenPopup={setOpenPopup}
+      Data={users}
+      isError={error}
+      isLoading={loading}
+      >
+      </Follower>
   </div>
   )
   

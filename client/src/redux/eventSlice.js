@@ -77,6 +77,19 @@ export const fetchParticipant = createAsyncThunk("users/fetchParticipant",async(
     }
 })
 //Update event
+export const updateEvent = createAsyncThunk("events/updateEvent",async(data,thunkAPI)=>{
+    const id=data.get("_id")
+    const {rejectWithValue}=thunkAPI;
+    const config = {header: { "content-type": "multipart/form-data" }}
+    try {
+        const res = await axios.put(`/event/${id}`,data,config,{headers:{
+            "content-type": "application/json;charset=utf-8",
+           }})
+        return res.data   
+    } catch (error) {
+        return rejectWithValue(error.message)
+    }
+})
 //Delete event
 
 
@@ -157,6 +170,18 @@ const eventSlice= createSlice({
             state.event=action.payload;
         })
         .addCase(fetchParticipant.rejected,(state,action)=>{
+            state.loading =false;
+            state.error=true;
+        })
+        .addCase(updateEvent.pending,(state)=>{
+            state.loading=true;
+            state.error=false;
+        })
+        .addCase(updateEvent.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.event=action.payload;
+        })
+        .addCase(updateEvent.rejected,(state,action)=>{
             state.loading =false;
             state.error=true;
         })

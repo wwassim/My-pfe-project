@@ -2,7 +2,7 @@ import { useEffect ,useState,useCallback} from "react";
 import { useSelector,useDispatch } from "react-redux"; 
 import {  useNavigate } from "react-router-dom";
 import { Box, Button,Typography, useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid,GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import AddIcon from '@mui/icons-material/Add';
@@ -87,7 +87,7 @@ const Team = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Header title="TEAM" subtitle="Managing the Team Members" />
+          <Header title="USERS" subtitle="Managing the Users Members" />
         <Box>
           <Button
             sx={{
@@ -111,6 +111,9 @@ const Team = () => {
           "& .MuiDataGrid-root": {
             border: "none",
           },
+          "& .MuiButtonBase-root": {
+            color:  colors.primary[100],
+          },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
           },
@@ -133,7 +136,20 @@ const Team = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection  getRowId={(row) => row._id} rows={users} columns={columns} />
+        <DataGrid checkboxSelection  getRowId={(row) => row._id} rows={users} columns={columns}
+           disableColumnFilter
+           disableColumnSelector
+           disableDensitySelector
+           slots={{ toolbar: GridToolbar }}
+           slotProps={{
+             toolbar: {
+               csvOptions: { disableToolbarButton: true } ,
+               printOptions:{hideFooter: true,hideToolbar: true,fileName:"Events List"},
+               // printOptions: { disableToolbarButton: true } ,
+               showQuickFilter: true,
+               quickFilterProps: { debounceMs: 500 }
+             }
+           }} />
       </Box>
       <PopUp
                 title="Employee Form"

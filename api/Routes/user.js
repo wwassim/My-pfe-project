@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     },
   });
   const upload = multer({ storage:storage });
-  Router.put('/:id',upload.fields([{ name: 'frontcin'},{ name: 'backcin', maxCount: 1 }]),userController.updateUser)
+  Router.put('/:id',upload.fields([{ name: 'frontcin'},{ name: 'profileImg'},{ name: 'backcin', maxCount: 1 }]),userController.updateUser)
 
 //get All users
 Router.get('/',userController.getAllUsers)
@@ -30,5 +30,8 @@ Router.put("/:id/follow",userController.followUser);
 Router.put("/:id/unfollow", userController.unfollowUser);
 //get getYourEvents
 Router.get("/:id/myevent",userController.getYourEvents)
- 
+//Like Organisateur
+Router.put("/:id/like", userController.Stars);
+//Rembouressement
+Router.put("/:id/rembouressement",userController.Rembourssement)
 module.exports = Router

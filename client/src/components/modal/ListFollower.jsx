@@ -40,35 +40,41 @@ const useStyles = makeStyles(theme => ({
 }));
 const ListFollower = ({user,event}) => {
     const classes = useStyles();
-    const [participation, setParticipation] = useState(false);
+    // const [participation, setParticipation] = useState(false);
 
-    useEffect(() => {
-      if (user.participationEvent.includes(event?._id)) {
-        setParticipation(true);
-      } else {
-        setParticipation(false);
-      }
-    }, [user, event]);
+    // useEffect(() => {
+    //   if (user.participationEvent.includes(event?._id)) {
+    //     setParticipation(true);
+    //   } else {
+    //     setParticipation(false);
+    //   }
+    // }, [user, event]);
 
-      console.log(participation)
+    
 const handleClick = async () => {
         //send event id to localstorage
         localStorage.setItem('enevt',JSON.stringify(event._id))
         localStorage.setItem('userId',JSON.stringify(user._id))
        
-        if (participation) {
-          // dispatch(unfollowUser({ id: user._id, userId }));
-          // const updatedCurrentUser = { ...currentUser, followings: currentUser.followings.filter(f => f !== user._id) };
-          // localStorage.setItem('user', JSON.stringify(updatedCurrentUser));
-        } else {
+        // if (participation) {
+        //   dispatch(unfollowUser({ id: user._id, userId }));
+        //   const updatedCurrentUser = { ...currentUser, followings: currentUser.followings.filter(f => f !== user._id) };
+        //   localStorage.setItem('user', JSON.stringify(updatedCurrentUser));
+        // } else {
     
-          const ticketsPrice=event.ticketsPrice+"000"
+        //   const ticketsPrice=event.ticketsPrice+"000"
+        //   axios.post('/payment',{ticketsPrice}).then((res)=>{
+        //     const {result}=res.data;
+        //     window.location.href=result.link;
+        //     setParticipation(!participation);
+        //   }).catch((err)=>{console.error(err);});
+        // }
+        const ticketsPrice=event.ticketsPrice+"000"
           axios.post('/payment',{ticketsPrice}).then((res)=>{
             const {result}=res.data;
             window.location.href=result.link;
-            setParticipation(!participation);
+            // setParticipation(!participation);
           }).catch((err)=>{console.error(err);});
-        }
       };
   return (
     <List style={{ width: '100%' }}>
@@ -79,8 +85,8 @@ const handleClick = async () => {
                             <ListItemText primary={`${user.firstname} ${user.lastname}`} secondary={user.username} className={classes.listItemText} />
                             <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
                             <Button
-                                className={`rounded-lg p-2 ${participation ? 'bg-gray-500 text-gray-400' : 'bg-violet-700 text-white'}`} 
-                                disabled={participation}
+                                className={`rounded-lg p-2 ${user.participationEvent.includes(event?._id)? 'bg-gray-500 text-gray-400' : 'bg-violet-700 text-white'}`} 
+                                disabled={user.participationEvent.includes(event?._id)}
                                 onClick={()=>{handleClick()}}
                             >
                                 buy

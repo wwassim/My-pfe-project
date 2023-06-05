@@ -5,6 +5,7 @@ import Messenger from './Messenger';
 import axios from "axios";
 import {io} from "socket.io-client"
 import SignFirst from "../utility/SignFirst"
+import { toast } from 'react-toastify'
 
 const ChatDetails = ({user}) => {
   const [conversations, setConversations] = useState([]);
@@ -13,29 +14,43 @@ const ChatDetails = ({user}) => {
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const scrollRef = useRef();
-  const socket = useRef();
-
+  const socket = io('ws://localhost:8900');
 
   useEffect(() => {
-    socket.current = io("ws://localhost:8900");
-    socket.current.on("getMessage", (data) => {
+    socket.on('getMessage', ({ senderId, text }) => {
+      console.log(`Received a message from ${senderId}: ${text}`);
       setArrivalMessage({
-        sender: data.senderId,
-        text: data.text,
+        sender: senderId,
+        text: text,
         createdAt: Date.now(),
       });
     });
   }, []);
+  
 
+  
   useEffect(() => {
-    arrivalMessage &&
-      currentChat?.members.includes(arrivalMessage.sender) &&
+    // if (arrivalMessage){
+    //   console.log(currentChat?.members)
+    //   console.log(arrivalMessage.sender)
+    // }
+    
+    if (arrivalMessage && currentChat?.members.some(member => member._id === arrivalMessage.sender)) {
+      console.log(arrivalMessage)
       setMessages((prev) => [...prev, arrivalMessage]);
+      toast.info('New message received!', { position: toast.POSITION.TOP_RIGHT });
+    }
   }, [arrivalMessage, currentChat]);
+  
 
+  //add user to soket 
   useEffect(() => {
-    socket.current.emit("addUser", user._id);
+    socket.emit("addUser", user._id);
+    socket.on("getUsers", (users) => {
+      // console.log(users)
+    });
   }, [user]);
+
 /////////////////
   useEffect(() => {
     const getConversations = async () => {
@@ -64,18 +79,18 @@ const ChatDetails = ({user}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const message = {
-      sender: user._id,
+      sender: user?._id,
       text: newMessage,
-      conversationId: currentChat._id,
+      conversationId: currentChat?._id,
     };
-
-    const receiverId = currentChat.members.find(
-      (member) => member !== user._id
+    
+    const receiverId = currentChat?.members.find(
+      (member) => member._id !== user?._id
     );
 
-    socket.current.emit("sendMessage", {
-      senderId: user._id,
-      receiverId,
+    socket.emit("sendMessage", {
+      senderId: user?._id,
+      receiverId :receiverId?._id,
       text: newMessage,
     });
 
@@ -109,11 +124,13 @@ const ChatDetails = ({user}) => {
            </div>
            {/* <!-- end search compt --> */}
            {/* <!-- user list --> */}
-           {conversations.map((item)=>(
-             <div className='cursor-pointer' onClick={() => setCurrentChat(item)}>
-               <Conversation conv={item} currentUser={user}/>
-             </div>
-           ))}
+           {conversations.map((item) => {
+              return (
+                <div className='cursor-pointer' onClick={() => setCurrentChat(item)}>
+                  <Conversation conv={item} currentUser={user} />
+                </div>
+              );
+            })}
            
            {/* <!-- end user list --> */}
          </div>

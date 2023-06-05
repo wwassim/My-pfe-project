@@ -11,7 +11,7 @@ import Dropzone from "react-dropzone";
 import ClearIcon from "@material-ui/icons/Clear";
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
-import { fetchEvent, updateEvent } from "../../redux/eventSlice";
+import { fetchEvent, updateEvent,cleanEvent } from "../../redux/eventSlice";
 import { fetchCategorys } from "../../redux/categorySlice";
 import useEventDetails from "../../Hooks/use-event-datails";
 import Loading from '../global/Loading'
@@ -37,46 +37,52 @@ const EditEvent = () => {
     const dispatch = useDispatch()
     const [file, setFile] = useState(null);
     const {categorys}=useSelector((state)=>state.categorys)
-     const {loading,error,event}=useSelector((state)=>state.events)
-    console.log("jj"+error)
-    // useEffect(()=>{
-    //   return()=>{
-    //    // dispatch(cleanUser())
-    //   }
-    // },[dispatch])
+    //  const {loading,error,event}=useSelector((state)=>state.events)
+    const{loading,error,event}=useEventDetails();
+useEffect(()=>{
+      return()=>{
+       dispatch(cleanEvent())
+      }
+    },[dispatch])
+    
+    
 
     useEffect(()=>{
       dispatch(fetchCategorys())
     },[dispatch])
+    
     useEffect(()=>{
-      dispatch(fetchEvent(id)())
+      dispatch(fetchEvent(id))
     },[dispatch,id])
+
+   
 
     const formik = useFormik({
       initialValues: {
-        eventTitle:event.eventTitle ,
-        category:event.category,
-        eventimage:event.eventpicture,
-        ticketsNbr:event.ticketsNbr,
-        ticketsPrice:event.ticketsPrice,
-        time:event.time,
-        // time:[new Date(), new Date()],
-        startDate: event.startDate,
-        endDate: event.endDate,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        location:event.location,
-        description:event.description,
+        eventTitle:event?.eventTitle,
+        category:event?.category,
+        eventimage:event?.eventpicture,
+        ticketsNbr:event?.ticketsNbr,
+        ticketsPrice:event?.ticketsPrice,
+        // time:event?.time,
+        time:[event?.startDate, event?.endDate],
+        startDate: event?.startDate,
+        endDate: event?.endDate,
+        startTime: event?.startTime,
+        endTime: event?.endTime,
+        location:event?.location,
+        description:event?.description,
       },
-      // enableReinitialize: true,
+      enableReinitialize: true,
       validationSchema:checkoutSchema,
+   
       onSubmit: (values) => {     
         const formData = new FormData();
         for (const key in values) {
           formData.append(key, values[key]);
         }
         formData.append("_id",event?._id)
-        console.log(formData)
+       
         dispatch(updateEvent(formData))
         .unwrap()
         .then(() => {
@@ -98,11 +104,10 @@ const EditEvent = () => {
     };
     const defaultProps = {options: categorys.map((option) => option.name),};
     
-    
   return (
     <Box m="20px">
       <Header title="Update an event" subtitle="Update an event" /> 
-      <Loading loading={loading} error={error} >
+      {/* <Loading loading={loading} error={error} > */}
 
       <form onSubmit={formik.handleSubmit}>
                 <Box
@@ -129,6 +134,7 @@ const EditEvent = () => {
                     />
                     <Autocomplete
                         {...defaultProps}
+                    
                         id="category"
                         value={formik.values.category}
                         onChange={(event, newValue) => {formik.setFieldValue('category', newValue);}}
@@ -164,7 +170,7 @@ const EditEvent = () => {
                                   <ClearIcon />
                                 </IconButton>
                               </Box>
-                            ) : ( <img  src={`http://localhost:5000/assets/${event?.eventpicture}`} sx={{display:"flex"}} width="200" 
+                            ) : ( <img  src={`http://localhost:5000/assets/${formik.values.eventimage}`} sx={{display:"flex"}} width="200" 
                             height="100" alt="hhh" />
                             )}
                           </div>
@@ -250,13 +256,16 @@ const EditEvent = () => {
                     </Box>  
                 </Box>
                 <Box display="flex" justifyContent="end" mt="20px">
+                <Button type="submit" color="secondary" variant="outlined" onClick={()=> navigate("/event")}  mr="10px">
+                Cancel
+                </Button>
               <Button type="submit" color="secondary" variant="contained">
                 Update
               </Button>
             </Box>
       </form> 
       
-      </Loading>  
+      {/* </Loading>   */}
     </Box>
   )
 }

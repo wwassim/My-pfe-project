@@ -24,7 +24,7 @@ const EditUser = () => {
     const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const navigate = useNavigate();
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const{user}=useUserDetails();
     useEffect(()=>{
         return()=>{

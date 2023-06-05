@@ -50,7 +50,7 @@ const CategoryForm = ({itemId}) => {
  
   return (
     <Box m="20px">
-      <Header title="CREATE Category" subtitle="Create a New category Profile" />   
+
           <form onSubmit={formik.handleSubmit}>
             <Box
               display="flex"

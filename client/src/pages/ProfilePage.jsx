@@ -2,38 +2,58 @@ import React, { useState,useEffect } from "react";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from "@mui/material";
+import {IconButton,} from "@material-tailwind/react";
+import TelegramIcon from '@mui/icons-material/Telegram';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import { yellow } from '@mui/material/colors';
 //
-import {cleanUser,unfollowUser,followUser} from '../redux/userSlice'
+import {cleanUser,unfollowUser,followUser, likeUser} from '../redux/userSlice'
 import useUserDetails from "../Hooks/use-user-details"
 import Sidebar from '../components/utility/Sidebar';
 import { useSelector } from 'react-redux';
-
-
+import { fetchOrgEvents,cleanEvents } from "../redux/eventSlice";
+import EventList from "../components/event/EventList";
+import Follower from "../components/profile/Followers";
+import Loading from "../components/utility/Loading";
+import axios from "axios";
 
 
 function UserProfilePage() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {user}=useUserDetails();
+  const {error,loading,user}=useUserDetails();
   const {user:currentUser}= useSelector((state) => state.auth)
-  const [followed, setFollowed] = useState(
-    currentUser.followings.includes(user?._id)
-  );
-
-  //const isFriend = currentUser.followers.find((friend) => friend === user?._id)
+  const {events}=useSelector((state) => state.events)
+  const[data,setData]=useState()
+  const [openPopup, setOpenPopup] = useState(false)//mtaa3 follower modal
+  const [liked, setLiked] = useState(false);
+  const [followed, setFollowed] = useState(false);
+  
+  
   useEffect(()=>{
     return()=>{
       dispatch(cleanUser())
     }
-  },[dispatch,currentUser])
+  },[dispatch])
 
 
-  // useEffect(() => {
-  //   if (currentUser&&user ) {
-  //     setFollowed(currentUser.followings.includes(user?._id));
-  //   }
-  // }, [currentUser,user]);
+  useEffect(()=>{
+    dispatch(fetchOrgEvents(user?._id))
+  },[dispatch,user])
+
+
+  useEffect(()=>{
+    if (currentUser && user) {
+      // console.log(currentUser.followings)
+    setLiked(user?.stars.includes(currentUser._id))
+    setFollowed(user.followers.includes(currentUser?._id))
+    
+    }
+    
+  },[user,currentUser])
+
   
   const handleClick = async () => {
     const userId = currentUser?._id;
@@ -49,73 +69,103 @@ function UserProfilePage() {
     setFollowed(!followed);
   };
 
+  const handleLike = () => {
+    const userId = currentUser?._id;
+    const id = user?._id;
+    dispatch(likeUser({ userId, id }));
+  };
+  const addConversations = (data) => {
+    console.log('temchi');
+    axios
+      .post("/conversations/", data)
+      .then((res) => {
+        // Perform additional logic or side effects
+        navigate("/chat");
+      })
+      .catch((err) => {
+        // Handle the error
+        console.log(err);
+      });
+  };
+  
+  const handleConv = () => {
+   
+    if (currentUser !== null) {
+      const data = { receiverId: user._id, senderId: currentUser._id };
+      addConversations(data);
+    }
+  };
+ console.log(user) 
   return (
     <div className="bg-neutral-100 h-screen w-screen overflow-hidden flex flex-row">
       <Sidebar/>
       <div className="flex flex-col flex-1">
+        <div className="flex-1 p-4 min-h-0 overflow-auto">
           <div className="w-full p-10 mx-auto">
-
             <div className="w-max flex item-center gap-20 mb-7">
-              <div className="h-full pl-5">
+              <div className="h-full pl-5 flex" >
                 <Avatar
                   style={{ width: "9rem", height: "22vh" }}
-                  className="suggestion_user_avatar"
                   alt="Remy Sharp"
-                  src=""
+                  src={user?.profileImg ?`http://localhost:5000/assets/${user?.profileImg}`:" https://cdn-icons-png.flaticon.com/512/147/147144.png"}
                 />
               </div>
               <div className="h-full col-span-2">
-                <div className="w-70 grid grid-cols-5 gap-x-4 mb-5">
-                  <div className="text-lg w-full">{user?.firstname}</div>
-
-                  <div className="text-center">
-                  {user?._id !== currentUser?._id ? (
-                    <button className="w-90 h-10 font-bold mx-auto  rounded-lg p-2 bg-violet-700 text-white" onClick={()=>handleClick()} >
-                     {followed ? "unfollow" : "follow"}                 
-                     </button>
-                    ):(
-                      <button className="w-90 h-10 font-bold mx-auto  rounded-lg p-2 bg-violet-700 text-white">Edit Profile</button>
-                    )}
-                  </div>
-                  <div className="pl-2">
-                    <svg
-                      aria-label="Options"
-                      class="_8-yf5 "
-                      color="#262626"
-                      fill="#262626"
-                      height="24"
-                      role="img"
-                      viewBox="0 0 24 24"
-                      width="24"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        fill="none"
-                        r="8.635"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      ></circle>
-                      <path
-                        d="M14.232 3.656a1.269 1.269 0 01-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 01-.796.66m-.001 16.688a1.269 1.269 0 01.796.66l.505.996h1.862l.505-.996a1.269 1.269 0 01.796-.66M3.656 9.768a1.269 1.269 0 01-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 01.66.796m16.688-.001a1.269 1.269 0 01.66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 01-.66-.796M7.678 4.522a1.269 1.269 0 01-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 01-.096 1.03m11.8 11.799a1.269 1.269 0 011.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 01.096-1.03m-14.956.001a1.269 1.269 0 01.096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 011.03.096m11.799-11.8a1.269 1.269 0 01-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 01-1.03-.096"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      ></path>
-                    </svg>
-                  </div>
+                <div className="w-70 flex item-center gap-x-4 mb-5">
+                  <div className="text-lg">{user?.firstname}</div>
+                  {currentUser?(
+                    user?._id !== currentUser?._id ? (
+                      <div className="flex gap-x-2">
+                        <button className="w-90 h-10 font-bold mx-auto  rounded-lg p-2 bg-violet-700 text-white" onClick={()=>handleClick()} >
+                        {followed ? "unfollow" : "follow"}                 
+                        </button>
+                        <IconButton className="flex items-center justify-center bg-violet-700 text-white" onClick={()=>handleConv()}>
+                            <TelegramIcon />
+                        </IconButton>
+                     
+                      </div>
+                      ):(
+                        <div className="flex gap-x-2">
+                        <button className="w-90 h-10 font-bold flex mx-auto  rounded-lg p-2 bg-violet-700 text-white" onClick={()=>navigate("edit")}>Edit Profile</button>
+                        </div>
+                     )
+                  ):(
+                    <></>
+                  )}
                 </div>
+
+                <div className="flex">
+                 {currentUser&&
+                  user?._id !== currentUser?._id ? (
+                    liked?(
+                      <div className="  space-x-2 bg-gray-300 text-white rounded-lg  text-center  mb-2 p-1 cursor-pointer" onClick={()=>handleLike()}> 
+                        <StarIcon  className='mb-1' sx={{ color: yellow[700] }}/>
+                        <span className="text-xl border-x-2 border-inherit px-1">starred</span>
+                        <span className="bg-gray-400 text-white rounded-lg p-1">{user?.stars.length}</span> 
+                      </div>
+                    ):(
+                     <div className="  space-x-2 bg-gray-300 text-white rounded-lg  text-center  mb-2 p-1 cursor-pointer" onClick={()=>handleLike()}> 
+                      <StarOutlineIcon  className='mb-1' sx={{ color: yellow[700] }}/>
+                      <span className="text-xl border-x-2 border-inherit px-1">star</span>
+                      <span className="bg-gray-400 text-white rounded-lg p-1">{user?.stars.length}</span>
+                    </div>
+                    )
+                  ):(
+                    <div className="  space-x-2 bg-gray-300 text-white rounded-lg  text-center  mb-2 p-1"> 
+                    <StarOutlineIcon  className='mb-1' sx={{ color: yellow[700] }}/>
+                    <span className="text-xl border-x-2 border-inherit px-1">stars</span>
+                    <span className="bg-gray-400 text-white rounded-lg p-1">{user?.stars.length}</span>
+                  </div>
+                  )}
+                </div>     
                 <div className="w-full flex item-center gap-x-4">
                   <div className="posts">
-                    <strong>11</strong> events
+                    <strong>{events?.length}</strong> events
                   </div>
                   <div className="followers">
                     <strong>{user?.followers?.length}</strong> followers
                   </div>
-                  <div className="following">
+                  <div className="following cursor-pointer" onClick={()=>{setOpenPopup(true)}}>
                     <strong>{user?.followings?.length}</strong> following
                   </div>
                 </div>
@@ -123,21 +173,33 @@ function UserProfilePage() {
                   <div className="profile_name">
                     <strong>{user?.firstname +'  '+user?.lastname }</strong>
                   </div>
-
-                  <div>
-                    👉Self Reliant 👈. 😎 👉Nature lover 👈 Visionary forever 🕵️ 👉I
-                    cook pretty good 🤗wanna Taste 😋
-                  </div>
-                </div>
+                </div>   
               </div>
             </div>
             <hr />
           </div>
         
-          <div className="w-70 mx-auto grid grid-cols-3 gap-4 md:gap-8 mt-20">
-            {/* events */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 m-5">
+          {events.map((item) => (
+              <div className="h-[200px] max-w-[300px]">
+              <img className="h-full w-full rounded-lg" src={`http://localhost:5000/assets/${item.eventpicture}`} alt={item.eventTitle}/>
             </div>
+          ))}
+          </div>
+          
+        </div> 
       </div>
+      
+      <Follower
+      title="Followers ..."
+      openPopup={openPopup}
+      setOpenPopup={setOpenPopup}
+      Data={user?.followings}
+      isError={error}
+      isLoading={loading}
+      >
+      </Follower>
+   
     </div>
     
   );

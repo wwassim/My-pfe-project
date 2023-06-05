@@ -4,6 +4,7 @@ import {Button}  from "@material-tailwind/react";
 import CloseIcon from '@material-ui/icons/Close';
 import ListFollower from './ListFollower';
 import axios from "axios";
+import Loading from '../utility/Loading';
 
 const useStyles = makeStyles(theme => ({
     dialogWrapper: {
@@ -42,72 +43,67 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const FollowerModal = (props) => {
-    const { title, openPopup, setOpenPopup, Data,event } = props;
+    const { title, openPopup, setOpenPopup, Data,event,isError,isLoading } = props;
     const currentUser = Data
     const usersData=Data.followings
     const classes = useStyles();
-    console.log(currentUser)
-    const [participation,setParticipation]=useState(
-        currentUser.participationEvent.includes(event?._id)
-      )
-        console.log(participation)
-      const handleClick = async () => {
     
+    // const [participation,setParticipation]=useState(
+    //     currentUser.participationEvent.includes(event?._id)
+    //   )
+      const handleClick = async () => {
         //send event id to localstorage
         localStorage.setItem('enevt',JSON.stringify(event._id))
-        if (participation) {
-          // dispatch(unfollowUser({ id: user._id, userId }));
-          // const updatedCurrentUser = { ...currentUser, followings: currentUser.followings.filter(f => f !== user._id) };
-          // localStorage.setItem('user', JSON.stringify(updatedCurrentUser));
-        } else {
-    
-          const ticketsPrice=event.ticketsPrice+"000"
+        localStorage.setItem('userId',JSON.stringify(currentUser._id))
+        
+        const ticketsPrice=event.ticketsPrice+"000"
           axios.post('/payment',{ticketsPrice}).then((res)=>{
             const {result}=res.data;
             window.location.href=result.link;
           }).catch((err)=>{console.error(err);});
-        }
-         setParticipation(!participation);
+        //  setParticipation(!participation);
       };
-      
+      const eventId = event._id;
 
     return (
-        <Dialog open={openPopup} maxWidth="md" fullWidth={true} classes={{ paper: classes.dialogWrapper, backgroundColor: "#141b2d", color: "#666666", }}>
-            <DialogTitle className={classes.dialogTitle}>
-                <div style={{ display: 'flex' }}>
-                    <Typography variant="h6">
-                        {title}
-                    </Typography>
-                    <Button
-                        onClick={() => { setOpenPopup(false) }}
-                        className={classes.closeButton}>
-                        <CloseIcon />
-                    </Button>
-                </div>
-            </DialogTitle>
-            <DialogContent className={classes.dialogContent}>
-                <List style={{ width: '100%' }}>
-                         <ListItem  className={classes.listItem} style={{ width: '100%' }}>
-                            <ListItemAvatar>
-                                <Avatar alt={currentUser.firstname} src={currentUser.profileImage} className={classes.avatar} />
-                            </ListItemAvatar>
-                            <ListItemText primary={`${currentUser.firstname} ${currentUser.lastname}`} secondary={currentUser.username} className={classes.listItemText} />
-                            <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
-                            <Button
-                                className={`rounded-lg p-2 ${participation ? 'bg-gray-500 text-gray-400' : 'bg-violet-700 text-white'}`} 
-                                disabled={participation}
-                                onClick={()=>{handleClick()}}
-                            >
-                                buy for me
-                            </Button>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                </List>
-                    {usersData.map(user => (
-                         <ListFollower key={user.id} user={user} event={event}/>
-                    ))}
-            </DialogContent>
-        </Dialog>
+        <Loading error={isError} loading={isLoading} >
+            <Dialog open={openPopup} maxWidth="md" fullWidth={true} classes={{ paper: classes.dialogWrapper, backgroundColor: "#141b2d", color: "#666666", }}>
+                <DialogTitle className={classes.dialogTitle}>
+                    <div style={{ display: 'flex' }}>
+                        <Typography variant="h6">
+                            {title}
+                        </Typography>
+                        <Button
+                            onClick={() => { setOpenPopup(false) }}
+                            className={classes.closeButton}>
+                            <CloseIcon />
+                        </Button>
+                    </div>
+                </DialogTitle>
+                <DialogContent className={classes.dialogContent}>
+                    <List style={{ width: '100%' }}>
+                            <ListItem  className={classes.listItem} style={{ width: '100%' }}>
+                                <ListItemAvatar>
+                                    <Avatar alt={currentUser.firstname} src={currentUser.profileImage} className={classes.avatar} />
+                                </ListItemAvatar>
+                                <ListItemText primary={`${currentUser.firstname} ${currentUser.lastname}`} secondary={currentUser.username} className={classes.listItemText} />
+                                <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
+                                <Button
+                                    className={`rounded-lg p-2 ${currentUser.participationEvent.some(event => event._id === eventId) ? 'bg-gray-500 text-gray-400' : 'bg-violet-700 text-white'}`} 
+                                    disabled={currentUser.participationEvent.includes(event._id)}
+                                    onClick={()=>{handleClick()}}
+                                >
+                                    buy for me
+                                </Button>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                    </List>
+                        {usersData.map(user => (
+                            <ListFollower key={user.id} user={user} event={event}/>
+                        ))}
+                </DialogContent>
+            </Dialog>
+        </Loading>
     )
 }
 

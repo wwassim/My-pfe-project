@@ -2,7 +2,7 @@ import { useEffect ,useState,useCallback} from "react";
 import { useSelector,useDispatch } from "react-redux"; 
 import {  useNavigate } from "react-router-dom";
 import { Box, Button,Typography, Avatar,useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid,GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import AddIcon from '@mui/icons-material/Add';
@@ -38,9 +38,9 @@ const Artist = () => {
   const colors = tokens(theme.palette.mode);
   const columns = [
     { field: "_id", headerName: "ID",flex:1, },
-    { field: "picture", headerName: "Picture", width: 60,
-    renderCell: (params) => <img src={`http://localhost:5000/assets/${params.row.picture}`} />, 
-    sortable: false,filterable: false,flex:1, 
+    { field: "picture", headerName: "Picture", width: 100,
+    renderCell: (params) => <Avatar src={`http://localhost:5000/assets/${params.row.picture}`} sx={{ width: 50, height: 50 }}/>, 
+    sortable: false,filterable: false, 
     },
     { field: "name", headerName: "Name", flex: 1,cellClassName: "name-column--cell",},
     {field: 'actions',headerName: 'Actions',flex: 1,renderCell: (params) => {
@@ -83,7 +83,7 @@ const Artist = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Header title="Artists" subtitle="Managing Artists" />
+          <Header title="ARTISTS" subtitle="Managing Artists" />
         <Box>
           <Button
             sx={{
@@ -107,6 +107,9 @@ const Artist = () => {
           "& .MuiDataGrid-root": {
             border: "none",
           },
+          "& .MuiButtonBase-root": {
+            color:  colors.primary[100],
+          },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
           },
@@ -129,7 +132,20 @@ const Artist = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection  getRowId={(row) => row._id} rows={artists} columns={columns} />
+        <DataGrid checkboxSelection  getRowId={(row) => row._id} rows={artists} columns={columns}
+            disableColumnFilter
+            disableColumnSelector
+            disableDensitySelector
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              toolbar: {
+                csvOptions: { disableToolbarButton: true } ,
+                printOptions:{hideFooter: true,hideToolbar: true,fileName:"Events List"},
+                // printOptions: { disableToolbarButton: true } ,
+                showQuickFilter: true,
+                quickFilterProps: { debounceMs: 500 }
+              }
+            }}/>
       </Box>
       <PopUp
                 title="Employee Form"

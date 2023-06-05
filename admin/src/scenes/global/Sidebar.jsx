@@ -11,7 +11,9 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import CategoryIcon from '@mui/icons-material/Category';
-
+import BarChartIcon from '@mui/icons-material/BarChart';
+import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -114,7 +116,7 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Dashboard"
-              to="/"
+              to="/dashboard"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -134,15 +136,22 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+             <Item
+              title="Organizers"
+              to="/organisateur"
+              icon={<Diversity3Icon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Item
-              title="Category"
+              title="Categorys"
               to="/category"
               icon={<CategoryIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Artist"
+              title="Artists"
               to="/artist"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
@@ -161,15 +170,22 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Pages
+              Statistics
             </Typography>
             <Item
-              title="Profile Form"
+              title="Charts"
               to="/form"
-              icon={<PersonOutlinedIcon />}
+              icon={<BarChartIcon />}
               selected={selected}
               setSelected={setSelected}
-            />   
+            />  
+             <Item
+              title="OrgEvents"
+              to="/orgevent"
+              icon={<DataThresholdingIcon/>}
+              selected={selected}
+              setSelected={setSelected}
+            />
           </Box>
         </Menu>
       </ProSidebar>

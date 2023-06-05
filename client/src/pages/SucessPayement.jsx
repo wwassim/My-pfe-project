@@ -10,6 +10,7 @@ function SucessPayement() {
     const [searchParams]=useSearchParams();
     const paymentId = searchParams.get('payment_id');
     const [result,setResult] = useState("");
+    const [orderId,setOrderId] = useState("");
     const {user:currentUser}=useSelector((state)=>state.auth)
     const {event}=useSelector((state)=>state.events)
     const id = JSON.parse(localStorage.getItem('enevt'))
@@ -22,6 +23,7 @@ function SucessPayement() {
         dispatch(fetchEvent(id))
         axios.post(`/payment/${paymentId}`)
         .then((res)=>{
+            setOrderId(res.data.result.details.order_number)
             setResult(res.data.result.status)
         })
         .catch((err)=>{console.error(err)});
@@ -61,7 +63,9 @@ function SucessPayement() {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div className="text-3xl font-bold mb-8 text-center">
-        Your order was confirmed
+       Thank you for your order.
+       <br/><br/>
+       <p className='font-light'>Your order number is  "{orderId}"</p>
       </div>
       <img
         src="assets/Spayment.png"

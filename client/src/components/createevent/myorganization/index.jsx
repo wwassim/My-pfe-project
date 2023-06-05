@@ -9,16 +9,20 @@ import AddIcon from '@mui/icons-material/Add';
 import Navbar from '../../utility/NavBar'
 import SidebarOrg from '../../utility/SidebarOrg';
 import { fetchOrgEvents,cleanEvents } from "../../../redux/eventSlice";
+import Loading from "../../utility/Loading";
 
 const Myorganization = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {events}=useSelector((state) => state.events)
+  const {error,loading,events}=useSelector((state) => state.events)
   const {user:currentUser}= useSelector((state) => state.auth)
+
   useEffect(()=>{
-    dispatch(fetchOrgEvents(currentUser._id))
-  },[dispatch])
+    if (currentUser !== null) {
+      dispatch(fetchOrgEvents(currentUser._id))
+    }
+  },[dispatch,currentUser])
+ 
   // useEffect(()=>{
   //   return()=>{
   //     dispatch(cleanEvents())
@@ -37,11 +41,10 @@ const Myorganization = () => {
     {field: 'actions',headerName: 'Actions',flex: 1,renderCell: (params) => {
 
       return (
-        <Box sx={{ gap: 2 }} >
-        <Button
+        <Box className="gap-0.5" >
+        <Button className="m-2 bg-violet-700 "
           sx={{
-            margin: "10px",
-             backgroundColor:  "#4cceac",
+            margin: "50px",
             color: "#141414",
             fontSize: "14px",
             fontWeight: "bold",
@@ -52,6 +55,20 @@ const Myorganization = () => {
           onClick={() => navigate(`${params.row._id}/details`)}
         >
           show
+        </Button>
+        <Button
+              sx={{
+                margin: "10px",
+                backgroundColor:  "#3da58a",
+                color:  "#141414",
+                fontSize: "14px",
+                fontWeight: "bold",
+                padding: "10px 20px",
+                border: 1,
+              }}
+              onClick={() => navigate(`${params.row._id}/edit`)}
+            >
+              Update
         </Button>
       </Box>
       );
@@ -75,6 +92,7 @@ const Myorganization = () => {
         
       </Box>
     </Box>
+    <Loading loading={loading} error={error}>
     <Box className="col-span-8 row-span-2 bg-gray-300  rounded-lg">
       <Box
         className="rounded-lg"
@@ -108,6 +126,7 @@ const Myorganization = () => {
         <DataGrid checkboxSelection getRowId={(row) => row._id} columns={columns} rows={events}/>
       </Box>
     </Box>
+    </Loading>
 
   </Box>
              </div>

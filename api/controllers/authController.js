@@ -65,6 +65,41 @@ exports.loginUser = async (req, res, next) => {
     }
   };
 //
+exports.loginAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(401).json("Wrong credentials.");
+    }
+    const hashedPassword = Cryptojs.AES.decrypt(
+      user.password,
+      process.env.PASS_SECRET
+    );
+    const originalPassword = hashedPassword.toString(Cryptojs.enc.Utf8);
+    if (originalPassword !== req.body.password) {
+      return res.status(401).json("Wrong credentials.");
+    }
+    if (user.isAdmin === false) {
+      return res.status(401).json("you don't have access to this page.");
+    }
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+        isAdmin: user.isAdmin,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "2 days" }
+    );
+    const { password, ...others } = user._doc;
+    res.status(200).json({ ...others, accessToken });
+  } catch (err) {
+    // Handle the error
+    console.error(err);
+    res.status(500).json({
+      errorMessage: "An error occurred while logging in.",
+    });
+  }
+};
 
 
 exports.sendResetPasswordLinkCtrl = async (req, res) => {

@@ -7,7 +7,6 @@ import SignFirst from '../components/utility/SignFirst';
 
 const Chat = () => {
   const { user } =  useSelector((state) => state.auth)
-  console.log(user)
   return (
     <div className="bg-neutral-100 h-screen w-screen overflow-hidden flex flex-row">
     <Sidebar/>
